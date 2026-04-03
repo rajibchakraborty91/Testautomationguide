@@ -3,686 +3,268 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Playwright TypeScript — Interview Guide</title>
+<title>Playwright TypeScript &mdash; Interview Guide</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+
   :root {
-    --bg: #080a0c;
-    --bg2: #0d1117;
-    --bg3: #161b22;
-    --bg4: #1c2230;
-    --border: #21262d;
-    --border2: #30363d;
-    --green: #00ff87;
-    --green2: #00cc6a;
-    --green3: rgba(0,255,135,0.08);
-    --green4: rgba(0,255,135,0.15);
-    --cyan: #00d4ff;
-    --orange: #ff7b39;
-    --purple: #9d6fff;
-    --yellow: #ffd166;
-    --red: #ff4d6d;
-    --text: #e6edf3;
-    --text2: #8b949e;
-    --text3: #6e7681;
-    --mono: 'JetBrains Mono', monospace;
-    --sans: 'Syne', sans-serif;
+    --bg:#080a0c;--bg2:#0d1117;--bg3:#161b22;--border:#21262d;--border2:#30363d;
+    --green:#00ff87;--green3:rgba(0,255,135,0.08);--cyan:#00d4ff;--orange:#ff7b39;
+    --purple:#9d6fff;--yellow:#ffd166;--red:#ff4d6d;
+    --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+    --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
   }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:var(--mono);line-height:1.7;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,135,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,135,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+  .orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;opacity:.15;}
+  .orb-1{width:600px;height:600px;background:var(--green);top:-200px;left:-200px;}
+  .orb-2{width:400px;height:400px;background:var(--cyan);bottom:0;right:-100px;}
+  nav{position:sticky;top:0;z-index:100;background:rgba(8,10,12,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;gap:.75rem;height:56px;}
+  .nav-brand{font-family:var(--sans);font-weight:800;font-size:.85rem;color:var(--green);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;}
+  .nav-divider{width:1px;height:20px;background:var(--border2);flex-shrink:0;}
+  .nav-links{display:flex;gap:.2rem;overflow-x:auto;scrollbar-width:none;flex:1;}
+  .nav-links::-webkit-scrollbar{display:none;}
+  .nav-link{font-size:.68rem;color:var(--text3);text-decoration:none;padding:.3rem .55rem;border-radius:4px;white-space:nowrap;transition:all .2s;letter-spacing:.03em;cursor:pointer;background:none;border:none;font-family:var(--mono);}
+  .nav-link:hover{color:var(--green);background:var(--green3);}
+  .hero{position:relative;z-index:1;padding:5rem 2rem 4rem;max-width:1100px;margin:0 auto;}
+  .hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--green3);border:1px solid rgba(0,255,135,.2);border-radius:100px;padding:.3rem .9rem;font-size:.7rem;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.5rem;animation:fadeInDown .6s ease both;}
+  .hero-badge span{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .hero h1{font-family:var(--sans);font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;animation:fadeInDown .6s .1s ease both;}
+  .hero h1 .accent{color:var(--green);}
+  .hero h1 .dim{color:var(--text2);}
+  .hero-sub{font-size:.9rem;color:var(--text2);margin-top:1.2rem;max-width:480px;animation:fadeInDown .6s .2s ease both;}
+  .hero-stats{display:flex;gap:2rem;margin-top:2.5rem;animation:fadeInDown .6s .3s ease both;}
+  .stat-num{font-family:var(--sans);font-size:2rem;font-weight:800;color:var(--green);line-height:1;}
+  .stat-label{font-size:.7rem;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin-top:.2rem;}
+  .container{max-width:1100px;margin:0 auto;padding:0 2rem 4rem;position:relative;z-index:1;}
+  .section-label{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem;}
+  .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+  .lessons-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:3rem;}
+  .lesson-card{background:var(--bg2);padding:1.5rem;cursor:pointer;transition:background .2s;position:relative;}
+  .lesson-card:hover{background:var(--bg3);}
+  .lesson-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--border);transition:background .2s;}
+  .lesson-card:hover::before{background:var(--green);}
+  .lesson-num{font-size:.65rem;color:var(--text3);letter-spacing:.1em;margin-bottom:.5rem;}
+  .lesson-title{font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.4rem;}
+  .lesson-desc{font-size:.75rem;color:var(--text2);line-height:1.6;}
+  .lesson-tag{display:inline-block;font-size:.6rem;padding:.15rem .5rem;border-radius:3px;letter-spacing:.08em;text-transform:uppercase;margin-top:.75rem;}
+  .tag-beginner{background:rgba(0,255,135,.1);color:var(--green);}
+  .tag-core{background:rgba(0,212,255,.1);color:var(--cyan);}
+  .tag-advanced{background:rgba(157,111,255,.1);color:var(--purple);}
+  .tag-interview{background:rgba(255,209,102,.1);color:var(--yellow);}
+  .lesson-detail{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:2rem;animation:fadeIn .3s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes fadeInDown{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);}}
+  .lesson-header{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
+  .lesson-header-left h2{font-family:var(--sans);font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:.3rem;}
+  .lesson-header-left p{font-size:.8rem;color:var(--text2);}
+  .close-btn{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);width:32px;height:32px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .2s;flex-shrink:0;}
+  .close-btn:hover{border-color:var(--red);color:var(--red);}
+  .lesson-body{padding:1.5rem;}
+  .code-block{background:var(--bg);border:1px solid var(--border2);border-radius:8px;overflow:hidden;margin:1rem 0;}
+  .code-header{padding:.6rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg3);}
+  .code-lang{font-size:.65rem;color:var(--green);letter-spacing:.1em;text-transform:uppercase;}
+  .copy-btn{font-size:.65rem;color:var(--text3);background:none;border:none;cursor:pointer;font-family:var(--mono);letter-spacing:.05em;transition:color .2s;padding:0;}
+  .copy-btn:hover{color:var(--green);}
+  pre{padding:1rem;font-size:.78rem;line-height:1.8;overflow-x:auto;color:var(--text);scrollbar-width:thin;scrollbar-color:var(--border2) transparent;white-space:pre-wrap;word-break:break-all;}
+  pre .kw{color:var(--purple);}pre .fn{color:var(--cyan);}pre .str{color:var(--green);}pre .cm{color:var(--text3);}pre .num{color:var(--orange);}pre .type{color:var(--yellow);}
+  .interview-note{background:rgba(255,209,102,.05);border:1px solid rgba(255,209,102,.2);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1rem 0;font-size:.8rem;color:var(--text2);}
+  .interview-note strong{color:var(--yellow);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.4rem;}
+  .warning-note{background:rgba(255,77,109,.05);border:1px solid rgba(255,77,109,.2);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1rem 0;font-size:.8rem;color:var(--text2);}
+  .warning-note strong{color:var(--red);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.4rem;}
+  .info-note{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.15);border-left:3px solid var(--cyan);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1rem 0;font-size:.8rem;color:var(--text2);}
+  .table-wrap{overflow-x:auto;margin:1rem 0;}
+  table{width:100%;border-collapse:collapse;font-size:.78rem;}
+  th{background:var(--bg3);color:var(--text2);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.6rem 1rem;text-align:left;border:1px solid var(--border);}
+  td{padding:.6rem 1rem;border:1px solid var(--border);color:var(--text);vertical-align:top;}
+  tr:hover td{background:var(--bg3);}
+  td:first-child{color:var(--cyan);}
+  .priority-list{list-style:none;margin:1rem 0;}
+  .priority-list li{display:flex;align-items:flex-start;gap:1rem;padding:.75rem 1rem;border:1px solid var(--border);border-radius:8px;margin-bottom:.5rem;background:var(--bg);font-size:.8rem;transition:border-color .2s;}
+  .priority-list li:hover{border-color:var(--border2);}
+  .priority-num{background:var(--green3);color:var(--green);border:1px solid rgba(0,255,135,.2);border-radius:5px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;}
+  .priority-list li.bad .priority-num{background:rgba(255,77,109,.1);color:var(--red);border-color:rgba(255,77,109,.2);}
+  .priority-content strong{color:var(--text);display:block;margin-bottom:.15rem;}
+  .priority-content code{font-size:.72rem;color:var(--green);}
+  .qa-item{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:.75rem;background:var(--bg);}
+  .qa-q{padding:1rem 1.25rem;cursor:pointer;display:flex;align-items:flex-start;gap:1rem;transition:background .2s;}
+  .qa-q:hover{background:var(--bg3);}
+  .qa-num{background:var(--green3);color:var(--green);border:1px solid rgba(0,255,135,.15);border-radius:5px;padding:.1rem .5rem;font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:.1rem;}
+  .qa-question{font-size:.85rem;color:var(--text);flex:1;}
+  .qa-arrow{color:var(--text3);font-size:.8rem;flex-shrink:0;margin-top:.1rem;transition:transform .2s;}
+  .qa-item.open .qa-arrow{transform:rotate(90deg);}
+  .qa-a{display:none;padding:1rem 1.25rem;font-size:.8rem;color:var(--text2);line-height:1.7;border-top:1px solid var(--border);}
+  .qa-item.open .qa-a{display:block;}
+  .qa-a code{color:var(--green);font-size:.75rem;background:var(--bg3);padding:.1rem .3rem;border-radius:3px;}
+  .progress-bar{background:var(--border);border-radius:4px;height:3px;margin-bottom:2rem;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:4px;transition:width .5s ease;}
+  .checklist{list-style:none;margin:.5rem 0;}
+  .checklist li{padding:.4rem 0;font-size:.8rem;color:var(--text2);display:flex;align-items:center;gap:.75rem;}
+  .checklist li::before{content:'\2713';color:var(--green);font-weight:700;flex-shrink:0;}
+  .fixture-grid{display:grid;grid-template-columns:1fr 2fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:1rem 0;}
+  .fixture-cell{background:var(--bg);padding:.6rem 1rem;font-size:.78rem;}
+  .fixture-cell.header{background:var(--bg3);color:var(--text2);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;}
+  .fixture-cell.key{color:var(--cyan);}
+  .back-btn{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--text2);background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:.4rem .9rem;cursor:pointer;margin-bottom:1.5rem;transition:all .2s;font-family:var(--mono);}
+  .back-btn:hover{color:var(--green);border-color:var(--green);}
+  footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2rem;text-align:center;font-size:.72rem;color:var(--text3);}
+  footer span{color:var(--green);}
+  .hidden{display:none!important;}
+  @media(max-width:640px){.hero-stats{gap:1.5rem;}.stat-num{font-size:1.5rem;}.lessons-grid{grid-template-columns:1fr;}.nav-links{display:none;}}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--mono);
-    line-height: 1.7;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* GRID BACKGROUND */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,255,135,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,255,135,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* GLOW ORBS */
-  .orb {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(120px);
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.15;
-  }
-  .orb-1 { width: 600px; height: 600px; background: var(--green); top: -200px; left: -200px; }
-  .orb-2 { width: 400px; height: 400px; background: var(--cyan); bottom: 0; right: -100px; }
-
-  /* NAVBAR */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(8,10,12,0.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    height: 56px;
-  }
-
-  .nav-brand {
-    font-family: var(--sans);
-    font-weight: 800;
-    font-size: 0.9rem;
-    color: var(--green);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .nav-divider { width: 1px; height: 20px; background: var(--border2); flex-shrink: 0; }
-
-  .nav-links {
-    display: flex;
-    gap: 0.25rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-    flex: 1;
-  }
-  .nav-links::-webkit-scrollbar { display: none; }
-
-  .nav-link {
-    font-size: 0.7rem;
-    color: var(--text3);
-    text-decoration: none;
-    padding: 0.3rem 0.6rem;
-    border-radius: 4px;
-    white-space: nowrap;
-    transition: all 0.2s;
-    letter-spacing: 0.03em;
-  }
-  .nav-link:hover { color: var(--green); background: var(--green3); }
-
-  /* HERO */
-  .hero {
-    position: relative;
-    z-index: 1;
-    padding: 5rem 2rem 4rem;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--green3);
-    border: 1px solid rgba(0,255,135,0.2);
-    border-radius: 100px;
-    padding: 0.3rem 0.9rem;
-    font-size: 0.7rem;
-    color: var(--green);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-    animation: fadeInDown 0.6s ease both;
-  }
-
-  .hero-badge span { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-
-  .hero h1 {
-    font-family: var(--sans);
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
-    animation: fadeInDown 0.6s 0.1s ease both;
-  }
-
-  .hero h1 .accent { color: var(--green); }
-  .hero h1 .dim { color: var(--text2); }
-
-  .hero-sub {
-    font-size: 0.9rem;
-    color: var(--text2);
-    margin-top: 1.2rem;
-    max-width: 480px;
-    animation: fadeInDown 0.6s 0.2s ease both;
-  }
-
-  .hero-stats {
-    display: flex;
-    gap: 2rem;
-    margin-top: 2.5rem;
-    animation: fadeInDown 0.6s 0.3s ease both;
-  }
-
-  .stat { text-align: left; }
-  .stat-num {
-    font-family: var(--sans);
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--green);
-    line-height: 1;
-  }
-  .stat-label { font-size: 0.7rem; color: var(--text3); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 0.2rem; }
-
-  /* MAIN LAYOUT */
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 2rem 4rem;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* SECTION LABEL */
-  .section-label {
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text3);
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  /* LESSON CARD */
-  .lessons-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 3rem;
-  }
-
-  .lesson-card {
-    background: var(--bg2);
-    padding: 1.5rem;
-    cursor: pointer;
-    transition: background 0.2s;
-    position: relative;
-  }
-  .lesson-card:hover { background: var(--bg3); }
-  .lesson-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 3px; height: 100%;
-    background: var(--border);
-    transition: background 0.2s;
-  }
-  .lesson-card:hover::before { background: var(--green); }
-
-  .lesson-num {
-    font-size: 0.65rem;
-    color: var(--text3);
-    letter-spacing: 0.1em;
-    margin-bottom: 0.5rem;
-  }
-  .lesson-title {
-    font-family: var(--sans);
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.4rem;
-  }
-  .lesson-desc { font-size: 0.75rem; color: var(--text2); line-height: 1.6; }
-
-  .lesson-tag {
-    display: inline-block;
-    font-size: 0.6rem;
-    padding: 0.15rem 0.5rem;
-    border-radius: 3px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-top: 0.75rem;
-  }
-  .tag-beginner { background: rgba(0,255,135,0.1); color: var(--green); }
-  .tag-core { background: rgba(0,212,255,0.1); color: var(--cyan); }
-  .tag-advanced { background: rgba(157,111,255,0.1); color: var(--purple); }
-  .tag-interview { background: rgba(255,209,102,0.1); color: var(--yellow); }
-
-  /* LESSON DETAIL */
-  .lesson-detail {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 2rem;
-    animation: fadeIn 0.3s ease;
-  }
-
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes fadeInDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
-
-  .lesson-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .lesson-header-left h2 {
-    font-family: var(--sans);
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.3rem;
-  }
-  .lesson-header-left p { font-size: 0.8rem; color: var(--text2); }
-
-  .close-btn {
-    background: var(--bg3);
-    border: 1px solid var(--border2);
-    color: var(--text2);
-    width: 32px; height: 32px;
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1rem;
-    transition: all 0.2s;
-    flex-shrink: 0;
-  }
-  .close-btn:hover { border-color: var(--red); color: var(--red); }
-
-  .lesson-body { padding: 1.5rem; }
-
-  /* CODE BLOCK */
-  .code-block {
-    background: var(--bg);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    overflow: hidden;
-    margin: 1rem 0;
-  }
-
-  .code-header {
-    padding: 0.6rem 1rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--bg3);
-  }
-
-  .code-lang { font-size: 0.65rem; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; }
-
-  .copy-btn {
-    font-size: 0.65rem;
-    color: var(--text3);
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: var(--mono);
-    letter-spacing: 0.05em;
-    transition: color 0.2s;
-    padding: 0;
-  }
-  .copy-btn:hover { color: var(--green); }
-
-  pre {
-    padding: 1rem;
-    font-size: 0.78rem;
-    line-height: 1.8;
-    overflow-x: auto;
-    color: var(--text);
-    scrollbar-width: thin;
-    scrollbar-color: var(--border2) transparent;
-  }
-
-  pre .kw { color: var(--purple); }
-  pre .fn { color: var(--cyan); }
-  pre .str { color: var(--green); }
-  pre .cm { color: var(--text3); }
-  pre .num { color: var(--orange); }
-  pre .type { color: var(--yellow); }
-
-  /* INTERVIEW NOTE */
-  .interview-note {
-    background: rgba(255,209,102,0.05);
-    border: 1px solid rgba(255,209,102,0.2);
-    border-left: 3px solid var(--yellow);
-    border-radius: 0 8px 8px 0;
-    padding: 1rem 1.25rem;
-    margin: 1rem 0;
-    font-size: 0.8rem;
-    color: var(--text2);
-  }
-  .interview-note strong { color: var(--yellow); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-bottom: 0.4rem; }
-
-  /* WARNING NOTE */
-  .warning-note {
-    background: rgba(255,77,109,0.05);
-    border: 1px solid rgba(255,77,109,0.2);
-    border-left: 3px solid var(--red);
-    border-radius: 0 8px 8px 0;
-    padding: 1rem 1.25rem;
-    margin: 1rem 0;
-    font-size: 0.8rem;
-    color: var(--text2);
-  }
-  .warning-note strong { color: var(--red); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-bottom: 0.4rem; }
-
-  /* INFO NOTE */
-  .info-note {
-    background: rgba(0,212,255,0.05);
-    border: 1px solid rgba(0,212,255,0.15);
-    border-left: 3px solid var(--cyan);
-    border-radius: 0 8px 8px 0;
-    padding: 1rem 1.25rem;
-    margin: 1rem 0;
-    font-size: 0.8rem;
-    color: var(--text2);
-  }
-
-  /* TABLE */
-  .table-wrap { overflow-x: auto; margin: 1rem 0; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
-  th {
-    background: var(--bg3);
-    color: var(--text2);
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.6rem 1rem;
-    text-align: left;
-    border: 1px solid var(--border);
-  }
-  td {
-    padding: 0.6rem 1rem;
-    border: 1px solid var(--border);
-    color: var(--text);
-    vertical-align: top;
-  }
-  tr:hover td { background: var(--bg3); }
-  td:first-child { color: var(--cyan); }
-
-  /* PRIORITY LIST */
-  .priority-list { list-style: none; margin: 1rem 0; }
-  .priority-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-bottom: 0.5rem;
-    background: var(--bg);
-    font-size: 0.8rem;
-    transition: border-color 0.2s;
-  }
-  .priority-list li:hover { border-color: var(--border2); }
-  .priority-num {
-    background: var(--green3);
-    color: var(--green);
-    border: 1px solid rgba(0,255,135,0.2);
-    border-radius: 5px;
-    width: 26px; height: 26px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.7rem; font-weight: 700;
-    flex-shrink: 0;
-  }
-  .priority-list li.bad .priority-num { background: rgba(255,77,109,0.1); color: var(--red); border-color: rgba(255,77,109,0.2); }
-  .priority-content strong { color: var(--text); display: block; margin-bottom: 0.15rem; }
-  .priority-content code { font-size: 0.72rem; color: var(--green); }
-
-  /* QA SECTION */
-  .qa-item {
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 0.75rem;
-    background: var(--bg);
-  }
-
-  .qa-q {
-    padding: 1rem 1.25rem;
-    cursor: pointer;
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    transition: background 0.2s;
-  }
-  .qa-q:hover { background: var(--bg3); }
-
-  .qa-num {
-    background: var(--green3);
-    color: var(--green);
-    border: 1px solid rgba(0,255,135,0.15);
-    border-radius: 5px;
-    padding: 0.1rem 0.5rem;
-    font-size: 0.65rem;
-    font-weight: 700;
-    flex-shrink: 0;
-    margin-top: 0.1rem;
-  }
-
-  .qa-question { font-size: 0.85rem; color: var(--text); flex: 1; }
-  .qa-arrow { color: var(--text3); font-size: 0.8rem; flex-shrink: 0; margin-top: 0.1rem; transition: transform 0.2s; }
-  .qa-item.open .qa-arrow { transform: rotate(90deg); }
-
-  .qa-a {
-    display: none;
-    padding: 1rem 1.25rem;
-    padding-top: 0;
-    padding-left: calc(1.25rem + 3.5rem);
-    font-size: 0.8rem;
-    color: var(--text2);
-    line-height: 1.7;
-    border-top: 1px solid var(--border);
-  }
-  .qa-item.open .qa-a { display: block; }
-  .qa-a code { color: var(--green); font-size: 0.75rem; background: var(--bg3); padding: 0.1rem 0.3rem; border-radius: 3px; }
-
-  /* PROGRESS */
-  .progress-bar {
-    background: var(--border);
-    border-radius: 4px;
-    height: 3px;
-    margin-bottom: 2rem;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--green), var(--cyan));
-    border-radius: 4px;
-    transition: width 0.5s ease;
-  }
-
-  /* AUTO-WAIT CHECKLIST */
-  .checklist { list-style: none; margin: 0.5rem 0; }
-  .checklist li {
-    padding: 0.4rem 0;
-    font-size: 0.8rem;
-    color: var(--text2);
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .checklist li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
-
-  /* FIXTURE TABLE */
-  .fixture-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 1rem 0; }
-  .fixture-cell { background: var(--bg); padding: 0.6rem 1rem; font-size: 0.78rem; }
-  .fixture-cell.header { background: var(--bg3); color: var(--text2); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; }
-  .fixture-cell.key { color: var(--cyan); }
-
-  /* BACK BUTTON */
-  .back-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    color: var(--text2);
-    background: var(--bg3);
-    border: 1px solid var(--border2);
-    border-radius: 6px;
-    padding: 0.4rem 0.9rem;
-    cursor: pointer;
-    margin-bottom: 1.5rem;
-    transition: all 0.2s;
-    font-family: var(--mono);
-  }
-  .back-btn:hover { color: var(--green); border-color: var(--green); }
-
-  /* FOOTER */
-  footer {
-    position: relative;
-    z-index: 1;
-    border-top: 1px solid var(--border);
-    padding: 2rem;
-    text-align: center;
-    font-size: 0.72rem;
-    color: var(--text3);
-  }
-  footer span { color: var(--green); }
-
-  /* HIDDEN */
-  .hidden { display: none; }
-
-  @media (max-width: 640px) {
-    .hero-stats { gap: 1.5rem; }
-    .stat-num { font-size: 1.5rem; }
-    .lessons-grid { grid-template-columns: 1fr; }
-    nav { gap: 0.5rem; }
-    .nav-links { display: none; }
-    .qa-a { padding-left: 1.25rem; }
-  }
 </style>
 </head>
 <body>
-
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 
-<!-- NAVBAR -->
 <nav>
   <div class="nav-brand">PW Guide</div>
   <div class="nav-divider"></div>
   <div class="nav-links">
-    <a class="nav-link" href="#" onclick="showHome()">Home</a>
-    <a class="nav-link" href="#" onclick="openLesson(0)">Overview</a>
-    <a class="nav-link" href="#" onclick="openLesson(1)">What is PW</a>
-    <a class="nav-link" href="#" onclick="openLesson(2)">Setup</a>
-    <a class="nav-link" href="#" onclick="openLesson(3)">Locators</a>
-    <a class="nav-link" href="#" onclick="openLesson(4)">Actions</a>
-    <a class="nav-link" href="#" onclick="openLesson(5)">Assertions</a>
-    <a class="nav-link" href="#" onclick="openLesson(6)">Waits</a>
-    <a class="nav-link" href="#" onclick="openLesson(7)">POM</a>
-    <a class="nav-link" href="#" onclick="openLesson(8)">Fixtures</a>
-    <a class="nav-link" href="#" onclick="openLesson(9)">API Testing</a>
-    <a class="nav-link" href="#" onclick="openLesson(10)">Debug</a>
-    <a class="nav-link" href="#" onclick="openLesson(11)">Q&amp;A</a>
+    <button class="nav-link" onclick="showHome()">Home</button>
+    <button class="nav-link" onclick="openLesson(0)">Overview</button>
+    <button class="nav-link" onclick="openLesson(1)">What is PW</button>
+    <button class="nav-link" onclick="openLesson(2)">Setup</button>
+    <button class="nav-link" onclick="openLesson(3)">Locators</button>
+    <button class="nav-link" onclick="openLesson(4)">Actions</button>
+    <button class="nav-link" onclick="openLesson(5)">Assertions</button>
+    <button class="nav-link" onclick="openLesson(6)">Waits</button>
+    <button class="nav-link" onclick="openLesson(7)">POM</button>
+    <button class="nav-link" onclick="openLesson(8)">Fixtures</button>
+    <button class="nav-link" onclick="openLesson(9)">API Testing</button>
+    <button class="nav-link" onclick="openLesson(10)">Debug</button>
+    <button class="nav-link" onclick="openLesson(11)">Q&amp;A</button>
   </div>
 </nav>
 
-<!-- HOME VIEW -->
 <div id="home-view">
   <div class="hero">
     <div class="hero-badge"><span></span> Interview Preparation Course</div>
     <h1><span class="accent">Playwright</span><br><span class="dim">TypeScript</span> Guide</h1>
-    <p class="hero-sub">Complete SDET/QA interview prep. Lessons, code examples, and model answers — built for working professionals.</p>
+    <p class="hero-sub">Complete SDET/QA interview prep. Lessons, code examples, and model answers &mdash; built for working professionals.</p>
     <div class="hero-stats">
       <div class="stat"><div class="stat-num">13</div><div class="stat-label">Lessons</div></div>
       <div class="stat"><div class="stat-num">40+</div><div class="stat-label">Code Examples</div></div>
-      <div class="stat"><div class="stat-num">30+</div><div class="stat-label">Interview Q&A</div></div>
+      <div class="stat"><div class="stat-num">30+</div><div class="stat-label">Interview Q&amp;A</div></div>
     </div>
   </div>
-
   <div class="container">
     <div class="section-label">All Lessons</div>
-
-    <div class="lessons-grid" id="lessons-grid">
-      <!-- Filled by JS -->
-    </div>
-
-    <div class="section-label">Quick Q&A Preview</div>
+    <div class="lessons-grid" id="lessons-grid"></div>
+    <div class="section-label">Quick Q&amp;A Preview</div>
     <div id="home-qa"></div>
   </div>
 </div>
 
-<!-- LESSON VIEW -->
 <div id="lesson-view" class="hidden">
   <div class="container" style="padding-top:1.5rem">
-    <button class="back-btn" onclick="showHome()">← Back to lessons</button>
+    <button class="back-btn" onclick="showHome()">&larr; Back to lessons</button>
     <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
     <div id="lesson-content"></div>
   </div>
 </div>
 
 <footer>
-  Prepared by <span>Rajib Chakraborty</span> · rajib.chakraborty91@gmail.com · © 2025
+  Prepared by <span>Rajib Chakraborty</span> &middot; rajib.chakraborty91@gmail.com &middot; &copy; 2025
 </footer>
 
 <script>
-const lessons = [
-  {
-    num: '00',
-    title: 'Course Overview',
-    tag: 'beginner',
-    desc: 'What you will learn and how to use this course.',
-    content: `
-      <div class="lesson-header">
-        <div class="lesson-header-left">
-          <h2>Course Overview</h2>
-          <p>A structured, hands-on interview-prep course for Playwright.</p>
-        </div>
-        <button class="close-btn" onclick="showHome()">✕</button>
-      </div>
-      <div class="lesson-body">
-        <div class="info-note">This course covers everything needed to crack Playwright interviews. Real code examples, Q&A, and quizzes — built for working QA professionals and SDETs.</div>
-        <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;">Topics covered:</p>
-        <ul class="checklist">
-          <li>Playwright architecture, browsers, and differences from Selenium & Cypress</li>
-          <li>Setting up Playwright with JavaScript & TypeScript</li>
-          <li>Locators, selectors, and best practices</li>
-          <li>Click, type, navigate, upload, drag-drop and all interaction APIs</li>
-          <li>Assertions with expect() — soft, hard, custom matchers</li>
-          <li>Auto-waiting mechanics and when to use explicit waitFor</li>
-          <li>Page Object Model design pattern in TypeScript</li>
-          <li>Fixtures, hooks, and playwright.config.ts configuration</li>
-          <li>API testing with Playwright's request context</li>
-          <li>Screenshots, videos, traces, and debugging with Trace Viewer</li>
-          <li>30+ most-asked interview questions with model answers</li>
-        </ul>
-        <div class="interview-note"><strong>How to use</strong>Each lesson ends with interview tips. Look for Interview Note boxes — those are the things interviewers ask about most.</div>
-      </div>`
-  },
-  {
-    num: '01',
-    title: 'What is Playwright?',
-    tag: 'beginner',
-    desc: 'Architecture, protocols, and comparison with Selenium and Cypress.',
-    content: `
-      <div class="lesson-header">
-        <div class="lesson-header-left">
-          <h2>What is Playwright?</h2>
-          <p>Architecture, protocols, and framework comparison.</p>
-        </div>
-        <b
+
+var LESSONS = [{"num": "00", "title": "Course Overview", "tag": "beginner", "desc": "What you will learn and how to use this course.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Course Overview</h2><p>A structured, hands-on interview-prep course for Playwright.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"info-note\">This course covers everything needed to crack Playwright interviews. Real code examples, Q&amp;A, and quizzes built for working QA professionals and SDETs.</div><p style=\"font-size:0.82rem;color:var(--text2);margin-bottom:1rem;\">Topics covered:</p><ul class=\"checklist\"><li>Playwright architecture, browsers, and differences from Selenium &amp; Cypress</li><li>Setting up Playwright with JavaScript &amp; TypeScript</li><li>Locators, selectors, and best practices</li><li>Click, type, navigate, upload, drag-drop and all interaction APIs</li><li>Assertions with expect() - soft, hard, custom matchers</li><li>Auto-waiting mechanics and when to use explicit waitFor</li><li>Page Object Model design pattern in TypeScript</li><li>Fixtures, hooks, and playwright.config.ts configuration</li><li>API testing with Playwright request context</li><li>Screenshots, videos, traces, and debugging with Trace Viewer</li><li>30+ most-asked interview questions with model answers</li></ul><div class=\"interview-note\"><strong>How to use:</strong> Each lesson ends with interview tips. Look for Interview Note boxes - those are the things interviewers ask about most.</div></div>"}, {"num": "01", "title": "What is Playwright?", "tag": "beginner", "desc": "Architecture, protocols, and comparison with Selenium and Cypress.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>What is Playwright?</h2><p>Architecture, protocols, and framework comparison.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><p style=\"font-size:0.82rem;color:var(--text2);margin-bottom:1rem;\">Playwright is an open-source automation framework by Microsoft (released 2020) for reliable end-to-end testing. It controls browsers using the Chrome DevTools Protocol (CDP) for Chromium/Chrome and WebKit, and its own protocol for Firefox.</p><div class=\"interview-note\"><strong>Interview Note:</strong> Playwright uses browser-native APIs (CDP / WebKit protocol) to control browsers directly, unlike Selenium WebDriver which uses HTTP. This gives Playwright faster and more stable automation.</div><p style=\"font-size:0.78rem;color:var(--text3);margin:1.25rem 0 0.5rem;letter-spacing:0.05em;text-transform:uppercase;\">Playwright vs Selenium vs Cypress</p><div class=\"table-wrap\"><table><thead><tr><th>Feature</th><th>Playwright</th><th>Selenium</th><th>Cypress</th></tr></thead><tbody><tr><td>Multi-browser</td><td>Chrome, FF, Safari</td><td>All browsers</td><td>Chrome, FF, Edge</td></tr><tr><td>Multi-tab/iframe</td><td>Native support</td><td>Limited</td><td>No multi-tab</td></tr><tr><td>Auto-waiting</td><td>Built-in</td><td>Manual waits</td><td>Built-in</td></tr><tr><td>API Testing</td><td>Built-in</td><td>No</td><td>Via plugin only</td></tr><tr><td>Languages</td><td>JS,TS,Python,Java,C#</td><td>Many languages</td><td>JS/TS only</td></tr><tr><td>Parallel exec</td><td>Native workers</td><td>Grid needed</td><td>Paid feature</td></tr><tr><td>Mobile emulation</td><td>Built-in</td><td>Appium needed</td><td>Limited</td></tr><tr><td>Trace viewer</td><td>Built-in</td><td>No</td><td>Time-travel</td></tr></tbody></table></div><p style=\"font-size:0.78rem;color:var(--text3);margin:1.25rem 0 0.5rem;letter-spacing:0.05em;text-transform:uppercase;\">Architecture</p><ul class=\"priority-list\"><li><div class=\"priority-num\">1</div><div class=\"priority-content\"><strong>Test Runner (Node.js)</strong><code>@playwright/test manages scheduling, parallelism, reporting</code></div></li><li><div class=\"priority-num\">2</div><div class=\"priority-content\"><strong>Browser Server (separate process)</strong><code>Playwright launches browsers as a separate OS process for crash isolation</code></div></li><li><div class=\"priority-num\">3</div><div class=\"priority-content\"><strong>CDP / WebSocket Communication</strong><code>Test runner communicates via WebSocket using CDP (Chrome)</code></div></li><li><div class=\"priority-num\">4</div><div class=\"priority-content\"><strong>Browser Contexts (Isolation)</strong><code>Each test gets its own BrowserContext - like incognito. Cookies, storage fully isolated</code></div></li></ul><div class=\"interview-note\"><strong>Quiz Answer:</strong> Q: Which protocol does Playwright use to control Chromium?<br>A: Chrome DevTools Protocol (CDP) - gives direct low-level browser access, enabling network interception, performance monitoring.</div></div>"}, {"num": "02", "title": "Setup & Installation", "tag": "beginner", "desc": "Install Playwright, understand config file, project structure, and CLI commands.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Setup &amp; Installation</h2><p>Get a Playwright project running from scratch.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"interview-note\"><strong>Interview Note:</strong> \"How do you install Playwright?\" - npm init playwright@latest scaffolds the project. Playwright bundles its own browser binaries: Chromium, Firefox, WebKit - installed via npx playwright install.</div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">bash</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\"># Create a new project</span>\nnpm init playwright@latest\n\n<span class=\"cm\"># OR add to existing project</span>\nnpm install -D @playwright/test\n\n<span class=\"cm\"># Install browsers (Chromium, Firefox, WebKit)</span>\nnpx playwright install\n\n<span class=\"cm\"># Install only specific browser</span>\nnpx playwright install chromium</pre></div><p style=\"font-size:0.78rem;color:var(--text3);margin:1.25rem 0 0.5rem;letter-spacing:0.05em;text-transform:uppercase;\">playwright.config.ts Key Settings</p><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"kw\">import</span> { defineConfig, devices } <span class=\"kw\">from</span> <span class=\"str\">'@playwright/test'</span>;\n\n<span class=\"kw\">export default</span> <span class=\"fn\">defineConfig</span>({\n  testDir: <span class=\"str\">'./tests'</span>,\n  fullyParallel: <span class=\"num\">true</span>,\n  retries: <span class=\"num\">2</span>,\n  workers: <span class=\"num\">4</span>,\n  reporter: <span class=\"str\">'html'</span>,\n  use: {\n    baseURL: <span class=\"str\">'https://example.com'</span>,\n    headless: <span class=\"num\">true</span>,\n    screenshot: <span class=\"str\">'only-on-failure'</span>,\n    video: <span class=\"str\">'retain-on-failure'</span>,\n    trace: <span class=\"str\">'on-first-retry'</span>,\n  },\n  projects: [\n    { name: <span class=\"str\">'chromium'</span>, use: { ...devices[<span class=\"str\">'Desktop Chrome'</span>] } },\n    { name: <span class=\"str\">'firefox'</span>,  use: { ...devices[<span class=\"str\">'Desktop Firefox'</span>] } },\n    { name: <span class=\"str\">'webkit'</span>,   use: { ...devices[<span class=\"str\">'Desktop Safari'</span>] } },\n  ],\n});</pre></div><p style=\"font-size:0.78rem;color:var(--text3);margin:1.25rem 0 0.5rem;letter-spacing:0.05em;text-transform:uppercase;\">CLI Reference</p><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">bash</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre>npx playwright test                   <span class=\"cm\"># Run all tests</span>\nnpx playwright test login.spec.ts    <span class=\"cm\"># Specific file</span>\nnpx playwright test --ui             <span class=\"cm\"># Interactive UI mode</span>\nnpx playwright test --headed         <span class=\"cm\"># See browser</span>\nnpx playwright test --debug          <span class=\"cm\"># Step-by-step debugger</span>\nnpx playwright show-report           <span class=\"cm\"># Open HTML report</span></pre></div></div>"}, {"num": "03", "title": "Locators & Selectors", "tag": "core", "desc": "All selector strategies, priority order, and resilient locator patterns.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Locators &amp; Selectors</h2><p>Selector strategies, priority order, and best practices.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"interview-note\"><strong>Interview Note:</strong> \"What is a Locator vs ElementHandle?\" - Locators are lazy: they re-query the DOM on each action and auto-wait. ElementHandles are eager snapshots and can go stale. Always prefer Locators.</div><p style=\"font-size:0.78rem;color:var(--text3);margin:1.25rem 0 0.5rem;letter-spacing:0.05em;text-transform:uppercase;\">Locator Priority (Best to Worst)</p><ul class=\"priority-list\"><li><div class=\"priority-num\">1</div><div class=\"priority-content\"><strong>Role-based (ARIA) - Best</strong><code>page.getByRole('button', {name: 'Submit'})</code><br><span style=\"font-size:0.72rem;color:var(--text3)\">Most resilient - mirrors how assistive tech sees the page.</span></div></li><li><div class=\"priority-num\">2</div><div class=\"priority-content\"><strong>Label / Placeholder</strong><code>page.getByLabel('Email') / getByPlaceholder('...')</code><br><span style=\"font-size:0.72rem;color:var(--text3)\">Great for form inputs. Very readable.</span></div></li><li><div class=\"priority-num\">3</div><div class=\"priority-content\"><strong>Text Content</strong><code>page.getByText('Welcome back')</code><br><span style=\"font-size:0.72rem;color:var(--text3)\">Good for headings. Use {exact:true} for strict matching.</span></div></li><li><div class=\"priority-num\">4</div><div class=\"priority-content\"><strong>Test ID</strong><code>page.getByTestId('login-btn')</code><br><span style=\"font-size:0.72rem;color:var(--text3)\">Requires data-testid attribute. Best for dynamic pages.</span></div></li><li class=\"bad\"><div class=\"priority-num\">5</div><div class=\"priority-content\"><strong>CSS / XPath - Last Resort</strong><code>page.locator('.btn-primary')</code><br><span style=\"font-size:0.72rem;color:var(--text3)\">Fragile if UI changes. Use only as last resort.</span></div></li></ul><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// ARIA role - best approach</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'button'</span>, { name: <span class=\"str\">'Sign in'</span> }).<span class=\"fn\">click</span>();\n\n<span class=\"cm\">// Form label</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Username'</span>).<span class=\"fn\">fill</span>(<span class=\"str\">'john@example.com'</span>);\n\n<span class=\"cm\">// Test ID</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByTestId</span>(<span class=\"str\">'submit-btn'</span>).<span class=\"fn\">click</span>();\n\n<span class=\"cm\">// Chain locators for scoping</span>\n<span class=\"kw\">const</span> row = page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'row'</span>, { name: <span class=\"str\">'John Doe'</span> });\n<span class=\"kw\">await</span> row.<span class=\"fn\">getByRole</span>(<span class=\"str\">'button'</span>, { name: <span class=\"str\">'Delete'</span> }).<span class=\"fn\">click</span>();\n\n<span class=\"cm\">// Filter locators</span>\n<span class=\"kw\">const</span> active = page.<span class=\"fn\">locator</span>(<span class=\"str\">'.card'</span>).<span class=\"fn\">filter</span>({ hasText: <span class=\"str\">'Active'</span> });\n\n<span class=\"cm\">// nth element</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'listitem'</span>).<span class=\"fn\">nth</span>(<span class=\"num\">2</span>).<span class=\"fn\">click</span>();\n\n<span class=\"cm\">// Inside iframe</span>\n<span class=\"kw\">const</span> frame = page.<span class=\"fn\">frameLocator</span>(<span class=\"str\">'#payment-frame'</span>);\n<span class=\"kw\">await</span> frame.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Card number'</span>).<span class=\"fn\">fill</span>(<span class=\"str\">'4242424242424242'</span>);</pre></div><div class=\"interview-note\"><strong>Quiz Answer:</strong> Locators re-query the DOM on every action and auto-wait, immune to stale element errors. ElementHandles capture the element at a point in time and can become stale. Always use Locators.</div></div>"}, {"num": "04", "title": "Actions & Interactions", "tag": "core", "desc": "Clicks, keyboard, dropdowns, file uploads, drag & drop, tabs, dialogs.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Actions &amp; Interactions</h2><p>Every interaction API in Playwright.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Common Actions</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// Click variants</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'button'</span>).<span class=\"fn\">click</span>();\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByText</span>(<span class=\"str\">'Menu'</span>).<span class=\"fn\">dblclick</span>();\n<span class=\"kw\">await</span> element.<span class=\"fn\">click</span>({ button: <span class=\"str\">'right'</span> });        <span class=\"cm\">// right-click</span>\n<span class=\"kw\">await</span> element.<span class=\"fn\">click</span>({ modifiers: [<span class=\"str\">'Control'</span>] }); <span class=\"cm\">// Ctrl+click</span>\n\n<span class=\"cm\">// Typing</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Name'</span>).<span class=\"fn\">fill</span>(<span class=\"str\">'Rajib'</span>);\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'OTP'</span>).<span class=\"fn\">pressSequentially</span>(<span class=\"str\">'1234'</span>);\n\n<span class=\"cm\">// Select dropdown</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Country'</span>).<span class=\"fn\">selectOption</span>(<span class=\"str\">'India'</span>);\n\n<span class=\"cm\">// Checkbox / Radio</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Accept terms'</span>).<span class=\"fn\">check</span>();\n\n<span class=\"cm\">// File upload</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Upload'</span>).<span class=\"fn\">setInputFiles</span>(<span class=\"str\">'./resume.pdf'</span>);\n\n<span class=\"cm\">// Drag and Drop</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByTestId</span>(<span class=\"str\">'card'</span>).<span class=\"fn\">dragTo</span>(page.<span class=\"fn\">getByTestId</span>(<span class=\"str\">'dropzone'</span>));</pre></div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - New Tabs &amp; Dialogs</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// Capture new tab opened by click</span>\n<span class=\"kw\">const</span> [newPage] = <span class=\"kw\">await</span> <span class=\"type\">Promise</span>.<span class=\"fn\">all</span>([\n  context.<span class=\"fn\">waitForEvent</span>(<span class=\"str\">'page'</span>),\n  page.<span class=\"fn\">getByText</span>(<span class=\"str\">'Open in new tab'</span>).<span class=\"fn\">click</span>(),\n]);\n<span class=\"kw\">await</span> newPage.<span class=\"fn\">waitForLoadState</span>();\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(newPage).<span class=\"fn\">toHaveTitle</span>(<span class=\"str\">'Dashboard'</span>);\n\n<span class=\"cm\">// Handle browser dialogs</span>\npage.<span class=\"fn\">on</span>(<span class=\"str\">'dialog'</span>, <span class=\"kw\">async</span> dialog =&gt; {\n  console.<span class=\"fn\">log</span>(dialog.<span class=\"fn\">message</span>());\n  <span class=\"kw\">await</span> dialog.<span class=\"fn\">accept</span>();\n});</pre></div><div class=\"interview-note\"><strong>Interview Note:</strong> The Promise.all() pattern for new tabs is a classic interview question. You MUST start listening BEFORE clicking - clicking first risks missing the event (race condition).</div></div>"}, {"num": "05", "title": "Assertions", "tag": "core", "desc": "Auto-retrying assertions, hard vs soft, and full expect() reference.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Assertions</h2><p>Auto-retrying assertions with expect().</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"info-note\">Playwright expect() auto-retries for up to 5 seconds (configurable) until the assertion passes or times out. This eliminates most flaky tests caused by timing issues.</div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Full Reference</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// PAGE ASSERTIONS</span>\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(page).<span class=\"fn\">toHaveURL</span>(<span class=\"str\">'https://example.com/dashboard'</span>);\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(page).<span class=\"fn\">toHaveTitle</span>(<span class=\"str\">/Dashboard/</span>);\n\n<span class=\"cm\">// ELEMENT ASSERTIONS</span>\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toBeVisible</span>();\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toBeHidden</span>();\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toBeEnabled</span>();\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toBeDisabled</span>();\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toBeChecked</span>();\n\n<span class=\"cm\">// TEXT &amp; VALUE</span>\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toHaveText</span>(<span class=\"str\">'Welcome, Rajib'</span>);\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toContainText</span>(<span class=\"str\">'Welcome'</span>);\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toHaveValue</span>(<span class=\"str\">'user@example.com'</span>);\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toHaveAttribute</span>(<span class=\"str\">'href'</span>, <span class=\"str\">'/home'</span>);\n\n<span class=\"cm\">// COUNT</span>\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'listitem'</span>)).<span class=\"fn\">toHaveCount</span>(<span class=\"num\">5</span>);\n\n<span class=\"cm\">// SOFT ASSERTIONS (continue on failure)</span>\n<span class=\"kw\">await</span> expect.soft(locator).<span class=\"fn\">toBeVisible</span>();\n<span class=\"kw\">await</span> expect.soft(locator).<span class=\"fn\">toHaveText</span>(<span class=\"str\">'Expected Text'</span>);\n\n<span class=\"cm\">// CUSTOM TIMEOUT</span>\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toBeVisible</span>({ timeout: <span class=\"num\">10000</span> });</pre></div><div class=\"table-wrap\"><table><thead><tr><th>Hard Assertion (default)</th><th>Soft Assertion</th></tr></thead><tbody><tr><td>Throws immediately on failure. Test stops. Use for critical path.</td><td>expect.soft() records failure but continues. All failures reported together. Ideal for form validation.</td></tr></tbody></table></div><div class=\"interview-note\"><strong>Quiz Answer:</strong> Validate 5 form fields without stopping on first failure? Use expect.soft() for each assertion. All failures collected and reported together at the end.</div></div>"}, {"num": "06", "title": "Waits & Auto-waiting", "tag": "core", "desc": "Playwright's auto-wait checklist and when to use explicit waits.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Waits &amp; Auto-waiting</h2><p>Auto-waiting mechanics and explicit waits.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><p style=\"font-size:0.82rem;color:var(--text2);margin-bottom:1rem;\">Before performing any action, Playwright automatically checks ALL of the following:</p><ul class=\"checklist\"><li>Element is attached to the DOM</li><li>Element is visible (not hidden, not opacity:0)</li><li>Element is stable (not moving or animating)</li><li>Element receives pointer events (not obscured by overlay)</li><li>Element is enabled (not disabled attribute)</li></ul><p style=\"font-size:0.78rem;color:var(--text3);margin:1.25rem 0 0.5rem;letter-spacing:0.05em;text-transform:uppercase;\">Explicit Waits - When to Use</p><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// Wait for navigation / page load state</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">waitForLoadState</span>(<span class=\"str\">'networkidle'</span>);\n<span class=\"kw\">await</span> page.<span class=\"fn\">waitForLoadState</span>(<span class=\"str\">'domcontentloaded'</span>);\n\n<span class=\"cm\">// Wait for URL to change</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">waitForURL</span>(<span class=\"str\">'**/dashboard'</span>);\n\n<span class=\"cm\">// Wait for network request/response</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">waitForResponse</span>(<span class=\"str\">'**/api/users'</span>);\n\n<span class=\"cm\">// Wait for element state change</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'button'</span>).<span class=\"fn\">waitFor</span>({ state: <span class=\"str\">'visible'</span> });\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByText</span>(<span class=\"str\">'Loading...'</span>).<span class=\"fn\">waitFor</span>({ state: <span class=\"str\">'hidden'</span> });\n\n<span class=\"cm\">// AVOID: page.waitForTimeout(3000)</span></pre></div><div class=\"warning-note\"><strong>Warning:</strong> Never use page.waitForTimeout(ms) in production tests. It is a red flag in interviews showing poor async understanding. Use event-based waits or auto-retrying assertions instead.</div></div>"}, {"num": "07", "title": "Page Object Model", "tag": "advanced", "desc": "The most important design pattern for scalable test automation.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Page Object Model (POM)</h2><p>Design pattern for scalable, maintainable test automation.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"interview-note\"><strong>Interview Note:</strong> \"Implement a Page Object Model for a login page.\" Be ready to write this from scratch in TypeScript. Benefits: reusability, readability, single point of change when UI changes.</div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - LoginPage.ts</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"kw\">import</span> { <span class=\"type\">Page</span>, <span class=\"type\">Locator</span> } <span class=\"kw\">from</span> <span class=\"str\">'@playwright/test'</span>;\n\n<span class=\"kw\">export class</span> <span class=\"type\">LoginPage</span> {\n  <span class=\"kw\">readonly</span> page: <span class=\"type\">Page</span>;\n  <span class=\"kw\">readonly</span> emailInput: <span class=\"type\">Locator</span>;\n  <span class=\"kw\">readonly</span> passwordInput: <span class=\"type\">Locator</span>;\n  <span class=\"kw\">readonly</span> loginButton: <span class=\"type\">Locator</span>;\n  <span class=\"kw\">readonly</span> errorMessage: <span class=\"type\">Locator</span>;\n\n  <span class=\"fn\">constructor</span>(page: <span class=\"type\">Page</span>) {\n    <span class=\"kw\">this</span>.page = page;\n    <span class=\"kw\">this</span>.emailInput = page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Email'</span>);\n    <span class=\"kw\">this</span>.passwordInput = page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Password'</span>);\n    <span class=\"kw\">this</span>.loginButton = page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'button'</span>, { name: <span class=\"str\">'Sign In'</span> });\n    <span class=\"kw\">this</span>.errorMessage = page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'alert'</span>);\n  }\n\n  <span class=\"kw\">async</span> <span class=\"fn\">goto</span>() {\n    <span class=\"kw\">await this</span>.page.<span class=\"fn\">goto</span>(<span class=\"str\">'/login'</span>);\n  }\n\n  <span class=\"kw\">async</span> <span class=\"fn\">login</span>(email: <span class=\"type\">string</span>, password: <span class=\"type\">string</span>) {\n    <span class=\"kw\">await this</span>.emailInput.<span class=\"fn\">fill</span>(email);\n    <span class=\"kw\">await this</span>.passwordInput.<span class=\"fn\">fill</span>(password);\n    <span class=\"kw\">await this</span>.loginButton.<span class=\"fn\">click</span>();\n  }\n\n  <span class=\"kw\">async</span> <span class=\"fn\">loginAndExpectSuccess</span>(email: <span class=\"type\">string</span>, password: <span class=\"type\">string</span>) {\n    <span class=\"kw\">await this</span>.<span class=\"fn\">login</span>(email, password);\n    <span class=\"kw\">await this</span>.page.<span class=\"fn\">waitForURL</span>(<span class=\"str\">'**/dashboard'</span>);\n  }\n}</pre></div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - login.spec.ts</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"kw\">import</span> { test, expect } <span class=\"kw\">from</span> <span class=\"str\">'@playwright/test'</span>;\n<span class=\"kw\">import</span> { <span class=\"type\">LoginPage</span> } <span class=\"kw\">from</span> <span class=\"str\">'./pages/LoginPage'</span>;\n\n<span class=\"fn\">test</span>(<span class=\"str\">'valid login redirects to dashboard'</span>, <span class=\"kw\">async</span> ({ page }) =&gt; {\n  <span class=\"kw\">const</span> loginPage = <span class=\"kw\">new</span> <span class=\"type\">LoginPage</span>(page);\n  <span class=\"kw\">await</span> loginPage.<span class=\"fn\">goto</span>();\n  <span class=\"kw\">await</span> loginPage.<span class=\"fn\">loginAndExpectSuccess</span>(<span class=\"str\">'user@test.com'</span>, <span class=\"str\">'secret'</span>);\n  <span class=\"kw\">await</span> <span class=\"fn\">expect</span>(page).<span class=\"fn\">toHaveURL</span>(<span class=\"str\">/dashboard/</span>);\n});\n\n<span class=\"fn\">test</span>(<span class=\"str\">'invalid login shows error'</span>, <span class=\"kw\">async</span> ({ page }) =&gt; {\n  <span class=\"kw\">const</span> loginPage = <span class=\"kw\">new</span> <span class=\"type\">LoginPage</span>(page);\n  <span class=\"kw\">await</span> loginPage.<span class=\"fn\">goto</span>();\n  <span class=\"kw\">await</span> loginPage.<span class=\"fn\">login</span>(<span class=\"str\">'wrong@test.com'</span>, <span class=\"str\">'wrongpass'</span>);\n  <span class=\"kw\">await</span> <span class=\"fn\">expect</span>(loginPage.errorMessage).<span class=\"fn\">toBeVisible</span>();\n});</pre></div></div>"}, {"num": "08", "title": "Fixtures & Hooks", "tag": "advanced", "desc": "Playwright's dependency injection system, built-in fixtures, and custom fixtures.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Fixtures &amp; Hooks</h2><p>Dependency injection, setup/teardown patterns.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><p style=\"font-size:0.78rem;color:var(--text3);margin-bottom:0.75rem;letter-spacing:0.05em;text-transform:uppercase;\">Built-in Fixtures</p><div class=\"fixture-grid\"><div class=\"fixture-cell header\">Fixture</div><div class=\"fixture-cell header\">Description</div><div class=\"fixture-cell key\">page</div><div class=\"fixture-cell\">Isolated browser page per test</div><div class=\"fixture-cell key\">context</div><div class=\"fixture-cell\">Browser context (session isolation - like incognito)</div><div class=\"fixture-cell key\">browser</div><div class=\"fixture-cell\">Browser instance (shared across contexts)</div><div class=\"fixture-cell key\">request</div><div class=\"fixture-cell\">API request context for HTTP calls without a browser</div><div class=\"fixture-cell key\">browserName</div><div class=\"fixture-cell\">Current browser name, e.g. chromium, firefox</div><div class=\"fixture-cell key\">testInfo</div><div class=\"fixture-cell\">Test metadata, title, status, retry count, output path</div></div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Custom Fixture</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// fixtures.ts</span>\n<span class=\"kw\">import</span> { test <span class=\"kw\">as</span> base } <span class=\"kw\">from</span> <span class=\"str\">'@playwright/test'</span>;\n<span class=\"kw\">import</span> { <span class=\"type\">LoginPage</span> } <span class=\"kw\">from</span> <span class=\"str\">'./pages/LoginPage'</span>;\n\n<span class=\"kw\">export const</span> test = base.<span class=\"fn\">extend</span>({\n  loggedInPage: <span class=\"kw\">async</span> ({ page }, use) =&gt; {\n    <span class=\"kw\">const</span> loginPage = <span class=\"kw\">new</span> <span class=\"type\">LoginPage</span>(page);\n    <span class=\"kw\">await</span> loginPage.<span class=\"fn\">goto</span>();\n    <span class=\"kw\">await</span> loginPage.<span class=\"fn\">login</span>(<span class=\"str\">'user@test.com'</span>, <span class=\"str\">'pass123'</span>);\n    <span class=\"kw\">await</span> page.<span class=\"fn\">waitForURL</span>(<span class=\"str\">'**/dashboard'</span>);\n    <span class=\"kw\">await</span> <span class=\"fn\">use</span>(page); <span class=\"cm\">// inject into test</span>\n    <span class=\"cm\">// teardown runs here automatically</span>\n  },\n});</pre></div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Hooks</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre>test.<span class=\"fn\">beforeAll</span>(<span class=\"kw\">async</span> ({ browser }) =&gt; {\n  <span class=\"cm\">// Once before all tests</span>\n});\n\ntest.<span class=\"fn\">afterAll</span>(<span class=\"kw\">async</span> () =&gt; {\n  <span class=\"cm\">// Once after all tests</span>\n});\n\ntest.<span class=\"fn\">beforeEach</span>(<span class=\"kw\">async</span> ({ page }) =&gt; {\n  <span class=\"kw\">await</span> page.<span class=\"fn\">goto</span>(<span class=\"str\">'/'</span>);\n});\n\ntest.<span class=\"fn\">afterEach</span>(<span class=\"kw\">async</span> ({ page }, testInfo) =&gt; {\n  <span class=\"kw\">if</span> (testInfo.status !== testInfo.expectedStatus) {\n    <span class=\"kw\">await</span> page.<span class=\"fn\">screenshot</span>({ path: <span class=\"str\">'failed.png'</span> });\n  }\n});</pre></div></div>"}, {"num": "09", "title": "API Testing", "tag": "advanced", "desc": "Test REST APIs without a browser, mock and intercept network requests.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>API Testing</h2><p>Direct API testing and network interception/mocking.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Direct API Testing</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"kw\">import</span> { test, expect } <span class=\"kw\">from</span> <span class=\"str\">'@playwright/test'</span>;\n\n<span class=\"fn\">test</span>(<span class=\"str\">'GET /users returns 200'</span>, <span class=\"kw\">async</span> ({ request }) =&gt; {\n  <span class=\"kw\">const</span> response = <span class=\"kw\">await</span> request.<span class=\"fn\">get</span>(<span class=\"str\">'https://api.example.com/users'</span>);\n  <span class=\"fn\">expect</span>(response.<span class=\"fn\">status</span>()).<span class=\"fn\">toBe</span>(<span class=\"num\">200</span>);\n  <span class=\"kw\">const</span> body = <span class=\"kw\">await</span> response.<span class=\"fn\">json</span>();\n  <span class=\"fn\">expect</span>(body).<span class=\"fn\">toHaveLength</span>(<span class=\"num\">10</span>);\n  <span class=\"fn\">expect</span>(body[<span class=\"num\">0</span>]).<span class=\"fn\">toHaveProperty</span>(<span class=\"str\">'id'</span>);\n});\n\n<span class=\"fn\">test</span>(<span class=\"str\">'POST /users creates a user'</span>, <span class=\"kw\">async</span> ({ request }) =&gt; {\n  <span class=\"kw\">const</span> response = <span class=\"kw\">await</span> request.<span class=\"fn\">post</span>(<span class=\"str\">'/users'</span>, {\n    data: { name: <span class=\"str\">'Rajib'</span>, email: <span class=\"str\">'rajib@test.com'</span> },\n    headers: { <span class=\"str\">'Authorization'</span>: <span class=\"str\">'Bearer token123'</span> }\n  });\n  <span class=\"fn\">expect</span>(response.<span class=\"fn\">status</span>()).<span class=\"fn\">toBe</span>(<span class=\"num\">201</span>);\n});</pre></div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Network Mocking</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// Mock an API response</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">route</span>(<span class=\"str\">'**/api/products'</span>, <span class=\"kw\">async</span> route =&gt; {\n  <span class=\"kw\">await</span> route.<span class=\"fn\">fulfill</span>({\n    status: <span class=\"num\">200</span>,\n    contentType: <span class=\"str\">'application/json'</span>,\n    body: <span class=\"type\">JSON</span>.<span class=\"fn\">stringify</span>([{ id: <span class=\"num\">1</span>, name: <span class=\"str\">'Mock Product'</span> }]),\n  });\n});\n\n<span class=\"cm\">// Block analytics/tracking</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">route</span>(<span class=\"str\">'**/{analytics,tracking}/**'</span>, r =&gt; r.<span class=\"fn\">abort</span>());\n\n<span class=\"cm\">// Wait for specific response</span>\n<span class=\"kw\">const</span> [response] = <span class=\"kw\">await</span> <span class=\"type\">Promise</span>.<span class=\"fn\">all</span>([\n  page.<span class=\"fn\">waitForResponse</span>(<span class=\"str\">'**/api/login'</span>),\n  page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'button'</span>, { name: <span class=\"str\">'Login'</span> }).<span class=\"fn\">click</span>(),\n]);\n<span class=\"fn\">expect</span>(<span class=\"kw\">await</span> response.<span class=\"fn\">json</span>()).<span class=\"fn\">toHaveProperty</span>(<span class=\"str\">'token'</span>);</pre></div></div>"}, {"num": "10", "title": "Screenshots, Videos & Traces", "tag": "advanced", "desc": "Playwright's debugging toolkit \u2014 screenshots, video recording, Trace Viewer.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Screenshots, Videos &amp; Traces</h2><p>Capture evidence and debug with Trace Viewer.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Screenshots</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// Full page screenshot</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">screenshot</span>({ path: <span class=\"str\">'screenshot.png'</span>, fullPage: <span class=\"num\">true</span> });\n\n<span class=\"cm\">// Element-specific screenshot</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'dialog'</span>).<span class=\"fn\">screenshot</span>({ path: <span class=\"str\">'dialog.png'</span> });\n\n<span class=\"cm\">// Visual comparison (pixel-level diff)</span>\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(page).<span class=\"fn\">toHaveScreenshot</span>(<span class=\"str\">'baseline.png'</span>);\n\n<span class=\"cm\">// In playwright.config.ts:</span>\n<span class=\"cm\">// screenshot: 'only-on-failure'</span></pre></div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Video &amp; Trace</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// In playwright.config.ts:</span>\nuse: {\n  video: <span class=\"str\">'retain-on-failure'</span>,\n  trace: <span class=\"str\">'on-first-retry'</span>,\n}\n\n<span class=\"cm\">// Via CLI:</span>\nnpx playwright test --trace on\n\n<span class=\"cm\">// View the trace:</span>\nnpx playwright show-trace trace.zip</pre></div><div class=\"interview-note\"><strong>Interview Note:</strong> \"How do you debug a failing Playwright test?\" - Use Trace Viewer: npx playwright show-trace lets you step through each action, see DOM state, network requests, and console logs at every point. Also use --debug flag for Playwright Inspector.</div></div>"}, {"num": "11", "title": "Top Interview Q&A", "tag": "interview", "desc": "15 most frequently asked Playwright interview questions with model answers.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Top Interview Q&amp;A</h2><p>15 most-asked questions with model answers. Click to expand.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\" id=\"qa-body\"></div>"}, {"num": "12", "title": "Final Quiz Answers", "tag": "interview", "desc": "Answers to all quiz questions from throughout the course.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Final Quiz Answers</h2><p>All quiz answers from the course.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"qa-item open\"><div class=\"qa-q\" onclick=\"toggleQA(this)\"><div class=\"qa-num\">L1</div><div class=\"qa-question\">Which protocol does Playwright use to control Chromium?</div><div class=\"qa-arrow\">&#x25B6;</div></div><div class=\"qa-a\">Correct: <strong style=\"color:var(--green)\">Chrome DevTools Protocol (CDP)</strong><br><br>Playwright uses CDP for Chromium giving direct low-level browser access. This enables network interception, performance monitoring, and more reliable automation than Selenium HTTP-based WebDriver protocol.</div></div><div class=\"qa-item\"><div class=\"qa-q\" onclick=\"toggleQA(this)\"><div class=\"qa-num\">L3</div><div class=\"qa-question\">Key difference between Locator and ElementHandle?</div><div class=\"qa-arrow\">&#x25B6;</div></div><div class=\"qa-a\" style=\"display:none\">Correct: <strong style=\"color:var(--green)\">Locators re-query the DOM on every action and auto-wait; ElementHandles can go stale.</strong></div></div><div class=\"qa-item\"><div class=\"qa-q\" onclick=\"toggleQA(this)\"><div class=\"qa-num\">L5</div><div class=\"qa-question\">Validate 5 form fields without stopping on first failure?</div><div class=\"qa-arrow\">&#x25B6;</div></div><div class=\"qa-a\" style=\"display:none\">Correct: <strong style=\"color:var(--green)\">Use expect.soft() for each assertion.</strong> Records failures but continues test execution. All failures are reported together at the end.</div></div><div class=\"interview-note\" style=\"margin-top:1.5rem\"><strong>Congratulations!</strong> You have covered all 13 lessons of Playwright TypeScript Interview Prep. Review the Q&amp;A section regularly and practise writing code from memory.</div></div>"}];
+var QA = [{"q": "What is Playwright and how does it differ from Selenium?", "a": "Playwright is a Microsoft open-source framework for end-to-end automation using CDP/WebSocket. Unlike Selenium HTTP-based WebDriver, Playwright has built-in auto-waiting, multi-tab support, network interception, and native parallel execution - no external grid needed."}, {"q": "What is the difference between a Locator and an ElementHandle?", "a": "Locators are lazy - they re-query the DOM on every action and auto-wait, immune to stale element errors. ElementHandles capture the element at a point in time and go invalid if the DOM updates. Always prefer Locators in modern Playwright."}, {"q": "How do you handle multiple browser contexts?", "a": "Each BrowserContext is like an independent incognito session with isolated cookies, storage, and auth. Use browser.newContext() to create one. Multiple contexts enable multi-user testing simultaneously."}, {"q": "Explain the Page Object Model pattern.", "a": "POM is a design pattern where each page is a class with its locators and action methods. Tests use these classes instead of raw selectors - reusable, readable, and one place to update when UI changes."}, {"q": "How do you handle new tabs or popups?", "a": "Use Promise.all() to listen for the page event BEFORE triggering the click. Start listening first, then click - this prevents missing the event due to a race condition."}, {"q": "What is auto-waiting in Playwright?", "a": "Before any action, Playwright auto-waits for element to be: attached, visible, stable, receiving pointer events, and enabled. This eliminates most explicit waits needed in Selenium."}, {"q": "What is a Fixture in Playwright?", "a": "Fixtures are Playwright dependency injection mechanism. Built-ins: page, context, browser, request. Custom fixtures via test.extend() share setup/teardown - e.g. providing an authenticated page to every test."}, {"q": "How do you perform API testing with Playwright?", "a": "Use the request fixture: const response = await request.get('/api/users'). Mock network calls with page.route() to return stubbed responses for UI test isolation."}, {"q": "How do you debug Playwright tests?", "a": "Use: --debug flag (Playwright Inspector), --headed (see browser), Trace Viewer (npx playwright show-trace) for time-travel debugging, and page.pause() to pause mid-test."}, {"q": "Difference between hard and soft assertions?", "a": "Hard assertions (expect()) stop the test immediately on failure. Soft assertions (expect.soft()) record the failure but continue execution. All soft failures are reported together at the end."}, {"q": "How do you run tests in parallel?", "a": "Set fullyParallel: true and workers: N in playwright.config.ts. Each worker runs in its own browser context. Use test.describe.configure({ mode: parallel }) within a file."}, {"q": "What is the Trace Viewer?", "a": "Trace Viewer records DOM snapshots, network, console, and screenshots per step. View with npx playwright show-trace - essential for debugging CI/CD pipeline failures."}, {"q": "How do you handle authentication across tests?", "a": "Save auth state once via storageState and reuse it. Use a custom fixture that logs in before the test and calls use(page). Avoids slow repeated UI logins across the test suite."}, {"q": "What is waitForLoadState and when to use it?", "a": "Waits for: load, domcontentloaded, or networkidle (no requests for 500ms). Use after navigation when elements are not ready despite the URL having changed."}, {"q": "How do you test iframes in Playwright?", "a": "Use page.frameLocator('#frame-id') to get a FrameLocator, then chain standard locator methods inside it - same API as regular locators, works for same-origin and cross-origin frames."}];
+var tagMap = {beginner:'tag-beginner',core:'tag-core',advanced:'tag-advanced',interview:'tag-interview'};
+var tagLabel = {beginner:'Beginner',core:'Core',advanced:'Advanced',interview:'Interview Prep'};
+
+function renderHome() {
+  var grid = document.getElementById('lessons-grid');
+  var html = '';
+  for (var i = 0; i < LESSONS.length; i++) {
+    var l = LESSONS[i];
+    html += '<div class="lesson-card" onclick="openLesson(' + i + ')">' +
+      '<div class="lesson-num">LESSON ' + l.num + '</div>' +
+      '<div class="lesson-title">' + l.title + '</div>' +
+      '<div class="lesson-desc">' + l.desc + '</div>' +
+      '<span class="lesson-tag ' + tagMap[l.tag] + '">' + tagLabel[l.tag] + '</span>' +
+      '</div>';
+  }
+  grid.innerHTML = html;
+
+  var homeQa = document.getElementById('home-qa');
+  var qaHtml = '';
+  for (var j = 0; j < 5; j++) {
+    qaHtml += '<div class="qa-item" id="hqa-' + j + '">' +
+      '<div class="qa-q" onclick="toggleQA(this)">' +
+      '<div class="qa-num">Q0' + (j+1) + '</div>' +
+      '<div class="qa-question">' + QA[j].q + '</div>' +
+      '<div class="qa-arrow">&#x25B6;</div>' +
+      '</div>' +
+      '<div class="qa-a" style="display:none">' + QA[j].a + '</div>' +
+      '</div>';
+  }
+  qaHtml += '<div style="text-align:center;margin-top:1rem">' +
+    '<button onclick="openLesson(11)" style="background:var(--green3);border:1px solid rgba(0,255,135,.2);color:var(--green);padding:.6rem 1.5rem;border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:.78rem;letter-spacing:.05em;">View All 15 Q&amp;A &rarr;</button>' +
+    '</div>';
+  homeQa.innerHTML = qaHtml;
+}
+
+function openLesson(idx) {
+  document.getElementById('home-view').classList.add('hidden');
+  document.getElementById('lesson-view').classList.remove('hidden');
+  var pct = Math.round(((idx + 1) / LESSONS.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  var l = LESSONS[idx];
+  document.getElementById('lesson-content').innerHTML = '<div class="lesson-detail">' + l.content + '</div>';
+  if (idx === 11) {
+    var body = document.getElementById('qa-body');
+    if (body) {
+      var qaHtml = '';
+      for (var i = 0; i < QA.length; i++) {
+        qaHtml += '<div class="qa-item" id="qa-' + i + '">' +
+          '<div class="qa-q" onclick="toggleQA(this)">' +
+          '<div class="qa-num">Q' + (i < 9 ? '0' : '') + (i+1) + '</div>' +
+          '<div class="qa-question">' + QA[i].q + '</div>' +
+          '<div class="qa-arrow">&#x25B6;</div>' +
+          '</div>' +
+          '<div class="qa-a" style="display:none">' + QA[i].a + '</div>' +
+          '</div>';
+      }
+      body.innerHTML = qaHtml;
+    }
+  }
+  window.scrollTo(0, 0);
+}
+
+function showHome() {
+  document.getElementById('home-view').classList.remove('hidden');
+  document.getElementById('lesson-view').classList.add('hidden');
+  window.scrollTo(0, 0);
+}
+
+function toggleQA(el) {
+  var item = el.closest('.qa-item');
+  var answer = item.querySelector('.qa-a');
+  var isOpen = item.classList.contains('open');
+  item.classList.toggle('open', !isOpen);
+  answer.style.display = isOpen ? 'none' : 'block';
+}
+
+function copyCode(btn) {
+  var pre = btn.closest('.code-block').querySelector('pre');
+  var text = pre.innerText;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() {
+      btn.textContent = 'copied!';
+      setTimeout(function() { btn.textContent = 'copy'; }, 1500);
+    });
+  }
+}
+
+renderHome();
+
+</script>
+</body>
+</html>
