@@ -3,268 +3,1397 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Playwright TypeScript &mdash; Interview Guide</title>
+<title>AI Test Automation Guide — testautomationguide.in</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-
-  :root {
-    --bg:#080a0c;--bg2:#0d1117;--bg3:#161b22;--border:#21262d;--border2:#30363d;
-    --green:#00ff87;--green3:rgba(0,255,135,0.08);--cyan:#00d4ff;--orange:#ff7b39;
-    --purple:#9d6fff;--yellow:#ffd166;--red:#ff4d6d;
-    --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
-    --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{background:var(--bg);color:var(--text);font-family:var(--mono);line-height:1.7;min-height:100vh;overflow-x:hidden;}
-  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,135,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,135,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
-  .orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;opacity:.15;}
-  .orb-1{width:600px;height:600px;background:var(--green);top:-200px;left:-200px;}
-  .orb-2{width:400px;height:400px;background:var(--cyan);bottom:0;right:-100px;}
-  nav{position:sticky;top:0;z-index:100;background:rgba(8,10,12,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;gap:.75rem;height:56px;}
-  .nav-brand{font-family:var(--sans);font-weight:800;font-size:.85rem;color:var(--green);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;}
-  .nav-divider{width:1px;height:20px;background:var(--border2);flex-shrink:0;}
-  .nav-links{display:flex;gap:.2rem;overflow-x:auto;scrollbar-width:none;flex:1;}
-  .nav-links::-webkit-scrollbar{display:none;}
-  .nav-link{font-size:.68rem;color:var(--text3);text-decoration:none;padding:.3rem .55rem;border-radius:4px;white-space:nowrap;transition:all .2s;letter-spacing:.03em;cursor:pointer;background:none;border:none;font-family:var(--mono);}
-  .nav-link:hover{color:var(--green);background:var(--green3);}
-  .hero{position:relative;z-index:1;padding:5rem 2rem 4rem;max-width:1100px;margin:0 auto;}
-  .hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--green3);border:1px solid rgba(0,255,135,.2);border-radius:100px;padding:.3rem .9rem;font-size:.7rem;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.5rem;animation:fadeInDown .6s ease both;}
-  .hero-badge span{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
-  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
-  .hero h1{font-family:var(--sans);font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;animation:fadeInDown .6s .1s ease both;}
-  .hero h1 .accent{color:var(--green);}
-  .hero h1 .dim{color:var(--text2);}
-  .hero-sub{font-size:.9rem;color:var(--text2);margin-top:1.2rem;max-width:480px;animation:fadeInDown .6s .2s ease both;}
-  .hero-stats{display:flex;gap:2rem;margin-top:2.5rem;animation:fadeInDown .6s .3s ease both;}
-  .stat-num{font-family:var(--sans);font-size:2rem;font-weight:800;color:var(--green);line-height:1;}
-  .stat-label{font-size:.7rem;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin-top:.2rem;}
-  .container{max-width:1100px;margin:0 auto;padding:0 2rem 4rem;position:relative;z-index:1;}
-  .section-label{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem;}
-  .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
-  .lessons-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:3rem;}
-  .lesson-card{background:var(--bg2);padding:1.5rem;cursor:pointer;transition:background .2s;position:relative;}
-  .lesson-card:hover{background:var(--bg3);}
-  .lesson-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--border);transition:background .2s;}
-  .lesson-card:hover::before{background:var(--green);}
-  .lesson-num{font-size:.65rem;color:var(--text3);letter-spacing:.1em;margin-bottom:.5rem;}
-  .lesson-title{font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.4rem;}
-  .lesson-desc{font-size:.75rem;color:var(--text2);line-height:1.6;}
-  .lesson-tag{display:inline-block;font-size:.6rem;padding:.15rem .5rem;border-radius:3px;letter-spacing:.08em;text-transform:uppercase;margin-top:.75rem;}
-  .tag-beginner{background:rgba(0,255,135,.1);color:var(--green);}
-  .tag-core{background:rgba(0,212,255,.1);color:var(--cyan);}
-  .tag-advanced{background:rgba(157,111,255,.1);color:var(--purple);}
-  .tag-interview{background:rgba(255,209,102,.1);color:var(--yellow);}
-  .lesson-detail{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:2rem;animation:fadeIn .3s ease;}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-  @keyframes fadeInDown{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);}}
-  .lesson-header{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
-  .lesson-header-left h2{font-family:var(--sans);font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:.3rem;}
-  .lesson-header-left p{font-size:.8rem;color:var(--text2);}
-  .close-btn{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);width:32px;height:32px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .2s;flex-shrink:0;}
-  .close-btn:hover{border-color:var(--red);color:var(--red);}
-  .lesson-body{padding:1.5rem;}
-  .code-block{background:var(--bg);border:1px solid var(--border2);border-radius:8px;overflow:hidden;margin:1rem 0;}
-  .code-header{padding:.6rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg3);}
-  .code-lang{font-size:.65rem;color:var(--green);letter-spacing:.1em;text-transform:uppercase;}
-  .copy-btn{font-size:.65rem;color:var(--text3);background:none;border:none;cursor:pointer;font-family:var(--mono);letter-spacing:.05em;transition:color .2s;padding:0;}
-  .copy-btn:hover{color:var(--green);}
-  pre{padding:1rem;font-size:.78rem;line-height:1.8;overflow-x:auto;color:var(--text);scrollbar-width:thin;scrollbar-color:var(--border2) transparent;white-space:pre-wrap;word-break:break-all;}
-  pre .kw{color:var(--purple);}pre .fn{color:var(--cyan);}pre .str{color:var(--green);}pre .cm{color:var(--text3);}pre .num{color:var(--orange);}pre .type{color:var(--yellow);}
-  .interview-note{background:rgba(255,209,102,.05);border:1px solid rgba(255,209,102,.2);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1rem 0;font-size:.8rem;color:var(--text2);}
-  .interview-note strong{color:var(--yellow);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.4rem;}
-  .warning-note{background:rgba(255,77,109,.05);border:1px solid rgba(255,77,109,.2);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1rem 0;font-size:.8rem;color:var(--text2);}
-  .warning-note strong{color:var(--red);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.4rem;}
-  .info-note{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.15);border-left:3px solid var(--cyan);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1rem 0;font-size:.8rem;color:var(--text2);}
-  .table-wrap{overflow-x:auto;margin:1rem 0;}
-  table{width:100%;border-collapse:collapse;font-size:.78rem;}
-  th{background:var(--bg3);color:var(--text2);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.6rem 1rem;text-align:left;border:1px solid var(--border);}
-  td{padding:.6rem 1rem;border:1px solid var(--border);color:var(--text);vertical-align:top;}
-  tr:hover td{background:var(--bg3);}
-  td:first-child{color:var(--cyan);}
-  .priority-list{list-style:none;margin:1rem 0;}
-  .priority-list li{display:flex;align-items:flex-start;gap:1rem;padding:.75rem 1rem;border:1px solid var(--border);border-radius:8px;margin-bottom:.5rem;background:var(--bg);font-size:.8rem;transition:border-color .2s;}
-  .priority-list li:hover{border-color:var(--border2);}
-  .priority-num{background:var(--green3);color:var(--green);border:1px solid rgba(0,255,135,.2);border-radius:5px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;}
-  .priority-list li.bad .priority-num{background:rgba(255,77,109,.1);color:var(--red);border-color:rgba(255,77,109,.2);}
-  .priority-content strong{color:var(--text);display:block;margin-bottom:.15rem;}
-  .priority-content code{font-size:.72rem;color:var(--green);}
-  .qa-item{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:.75rem;background:var(--bg);}
-  .qa-q{padding:1rem 1.25rem;cursor:pointer;display:flex;align-items:flex-start;gap:1rem;transition:background .2s;}
-  .qa-q:hover{background:var(--bg3);}
-  .qa-num{background:var(--green3);color:var(--green);border:1px solid rgba(0,255,135,.15);border-radius:5px;padding:.1rem .5rem;font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:.1rem;}
-  .qa-question{font-size:.85rem;color:var(--text);flex:1;}
-  .qa-arrow{color:var(--text3);font-size:.8rem;flex-shrink:0;margin-top:.1rem;transition:transform .2s;}
-  .qa-item.open .qa-arrow{transform:rotate(90deg);}
-  .qa-a{display:none;padding:1rem 1.25rem;font-size:.8rem;color:var(--text2);line-height:1.7;border-top:1px solid var(--border);}
-  .qa-item.open .qa-a{display:block;}
-  .qa-a code{color:var(--green);font-size:.75rem;background:var(--bg3);padding:.1rem .3rem;border-radius:3px;}
-  .progress-bar{background:var(--border);border-radius:4px;height:3px;margin-bottom:2rem;overflow:hidden;}
-  .progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:4px;transition:width .5s ease;}
-  .checklist{list-style:none;margin:.5rem 0;}
-  .checklist li{padding:.4rem 0;font-size:.8rem;color:var(--text2);display:flex;align-items:center;gap:.75rem;}
-  .checklist li::before{content:'\2713';color:var(--green);font-weight:700;flex-shrink:0;}
-  .fixture-grid{display:grid;grid-template-columns:1fr 2fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:1rem 0;}
-  .fixture-cell{background:var(--bg);padding:.6rem 1rem;font-size:.78rem;}
-  .fixture-cell.header{background:var(--bg3);color:var(--text2);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;}
-  .fixture-cell.key{color:var(--cyan);}
-  .back-btn{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--text2);background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:.4rem .9rem;cursor:pointer;margin-bottom:1.5rem;transition:all .2s;font-family:var(--mono);}
-  .back-btn:hover{color:var(--green);border-color:var(--green);}
-  footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2rem;text-align:center;font-size:.72rem;color:var(--text3);}
-  footer span{color:var(--green);}
-  .hidden{display:none!important;}
-  @media(max-width:640px){.hero-stats{gap:1.5rem;}.stat-num{font-size:1.5rem;}.lessons-grid{grid-template-columns:1fr;}.nav-links{display:none;}}
-
+:root{
+  --bg:#080a0c;--bg2:#0d1117;--bg3:#161b22;--border:#21262d;--border2:#30363d;
+  --green:#00ff87;--green2:rgba(0,255,135,.12);--green3:rgba(0,255,135,.06);
+  --cyan:#00d4ff;--orange:#ff7b39;--purple:#9d6fff;--yellow:#ffd166;--red:#ff4d6d;
+  --electric:#7c6fff;--electric2:rgba(124,111,255,.12);--electric3:rgba(124,111,255,.06);
+  --teal:#00e5cc;--pink:#ff6bff;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);line-height:1.7;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,135,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,135,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.orb{position:fixed;border-radius:50%;filter:blur(130px);pointer-events:none;z-index:0;opacity:.12;}
+.orb-1{width:600px;height:600px;background:var(--green);top:-200px;left:-200px;}
+.orb-2{width:400px;height:400px;background:var(--cyan);bottom:0;right:-100px;}
+.orb-cc-1{width:600px;height:600px;background:var(--electric);top:-200px;right:-200px;display:none;}
+.orb-cc-2{width:400px;height:400px;background:var(--teal);bottom:0;left:-100px;display:none;}
+nav{position:sticky;top:0;z-index:100;background:rgba(8,10,12,.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;gap:.75rem;height:56px;}
+.nav-brand{font-family:var(--sans);font-weight:800;font-size:.82rem;color:var(--green);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;cursor:pointer;}
+.nav-brand.cc-mode{color:var(--electric);}
+.nav-divider{width:1px;height:20px;background:var(--border2);flex-shrink:0;}
+.nav-links{display:flex;gap:.2rem;overflow-x:auto;scrollbar-width:none;flex:1;}
+.nav-links::-webkit-scrollbar{display:none;}
+.nav-link{font-size:.68rem;color:var(--text3);padding:.3rem .55rem;border-radius:4px;white-space:nowrap;transition:all .2s;letter-spacing:.03em;cursor:pointer;background:none;border:none;font-family:var(--mono);}
+.nav-link:hover,.nav-link.pw:hover{color:var(--green);background:var(--green3);}
+.nav-link.cc:hover{color:var(--electric);background:var(--electric3);}
+.nav-home-btn{font-size:.68rem;color:var(--text2);background:var(--bg3);border:1px solid var(--border2);border-radius:5px;padding:.3rem .7rem;cursor:pointer;font-family:var(--mono);transition:all .2s;white-space:nowrap;flex-shrink:0;display:none;}
+.nav-home-btn:hover{color:var(--green);border-color:var(--green);}
+.nav-home-btn.cc-mode:hover{color:var(--electric);border-color:var(--electric);}
+/* LANDING */
+#landing-view{position:relative;z-index:1;}
+.landing-hero{padding:5rem 2rem 3rem;max-width:1100px;margin:0 auto;text-align:center;}
+.landing-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,255,135,.06);border:1px solid rgba(0,255,135,.2);border-radius:100px;padding:.3rem .9rem;font-size:.7rem;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.5rem;animation:fadeInDown .5s ease both;}
+.landing-badge span{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.landing-hero h1{font-family:var(--sans);font-size:clamp(2.2rem,5.5vw,4rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;animation:fadeInDown .5s .1s ease both;}
+.g{color:var(--green);}.e{color:var(--electric);}
+.landing-sub{font-size:.88rem;color:var(--text2);margin-top:1rem;animation:fadeInDown .5s .2s ease both;}
+.guide-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;max-width:860px;margin:3rem auto 0;padding:0 2rem 5rem;animation:fadeInDown .5s .3s ease both;}
+.guide-card{position:relative;background:var(--bg2);border-radius:16px;padding:2.5rem 2rem;cursor:pointer;overflow:hidden;transition:transform .25s,box-shadow .25s;}
+.guide-card:hover{transform:translateY(-4px);}
+.guide-card.pw{border:1px solid rgba(0,255,135,.2);}
+.guide-card.pw:hover{box-shadow:0 0 50px rgba(0,255,135,.08);}
+.guide-card.cc{border:1px solid rgba(124,111,255,.2);}
+.guide-card.cc:hover{box-shadow:0 0 50px rgba(124,111,255,.08);}
+.guide-card-icon{font-size:2.2rem;margin-bottom:1.2rem;}
+.guide-card-title{font-family:var(--sans);font-size:1.4rem;font-weight:800;margin-bottom:.6rem;letter-spacing:-.02em;}
+.guide-card.pw .guide-card-title{color:var(--green);}
+.guide-card.cc .guide-card-title{color:var(--electric);}
+.guide-card-desc{font-size:.78rem;color:var(--text2);line-height:1.7;margin-bottom:1.5rem;}
+.guide-card-meta{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.guide-meta-item{font-size:.65rem;color:var(--text3);}
+.guide-card-cta{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-family:var(--mono);padding:.5rem 1.1rem;border-radius:7px;cursor:pointer;border:none;font-weight:600;transition:all .2s;}
+.guide-card.pw .guide-card-cta{background:var(--green2);color:var(--green);border:1px solid rgba(0,255,135,.25);}
+.guide-card.pw .guide-card-cta:hover{background:var(--green);color:#000;}
+.guide-card.cc .guide-card-cta{background:var(--electric2);color:var(--electric);border:1px solid rgba(124,111,255,.25);}
+.guide-card.cc .guide-card-cta:hover{background:var(--electric);color:#fff;}
+/* GUIDE VIEWS */
+#pw-view,#cc-view{position:relative;z-index:1;}
+.hero{padding:4.5rem 2rem 3.5rem;max-width:1100px;margin:0 auto;}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;border-radius:100px;padding:.3rem .9rem;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.5rem;animation:fadeInDown .5s ease both;}
+.hero-badge.pw{background:rgba(0,255,135,.06);border:1px solid rgba(0,255,135,.2);color:var(--green);}
+.hero-badge.cc{background:rgba(124,111,255,.06);border:1px solid rgba(124,111,255,.2);color:var(--electric);}
+.hero-badge span{width:6px;height:6px;border-radius:50%;animation:pulse 2s infinite;}
+.hero-badge.pw span{background:var(--green);}
+.hero-badge.cc span{background:var(--electric);}
+.hero h1{font-family:var(--sans);font-size:clamp(2.2rem,5.5vw,4rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;animation:fadeInDown .5s .1s ease both;}
+.accent-pw{color:var(--green);}.accent-cc{color:var(--electric);}.dim{color:var(--text2);}
+.hero-sub{font-size:.88rem;color:var(--text2);margin-top:1rem;max-width:500px;animation:fadeInDown .5s .2s ease both;}
+.hero-stats{display:flex;gap:2rem;margin-top:2.5rem;animation:fadeInDown .5s .3s ease both;}
+.stat-num{font-family:var(--sans);font-size:1.9rem;font-weight:800;line-height:1;}
+.stat-num.pw{color:var(--green);}.stat-num.cc{color:var(--electric);}
+.stat-label{font-size:.67rem;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin-top:.2rem;}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem 4rem;position:relative;z-index:1;}
+.section-label{font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.lessons-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:3rem;}
+.lesson-card{background:var(--bg2);padding:1.5rem;cursor:pointer;transition:background .2s;position:relative;}
+.lesson-card:hover{background:var(--bg3);}
+.lesson-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--border);transition:background .2s;}
+.lesson-card.pw:hover::before{background:var(--green);}
+.lesson-card.cc:hover::before{background:var(--electric);}
+.lesson-num{font-size:.63rem;color:var(--text3);letter-spacing:.1em;margin-bottom:.5rem;}
+.lesson-title{font-family:var(--sans);font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.4rem;}
+.lesson-desc{font-size:.73rem;color:var(--text2);line-height:1.6;}
+.lesson-tag{display:inline-block;font-size:.6rem;padding:.15rem .5rem;border-radius:3px;letter-spacing:.08em;text-transform:uppercase;margin-top:.75rem;}
+.tag-beginner{background:rgba(0,255,135,.1);color:var(--green);}
+.tag-core{background:rgba(0,212,255,.1);color:var(--cyan);}
+.tag-advanced{background:rgba(157,111,255,.1);color:var(--purple);}
+.tag-interview{background:rgba(255,209,102,.1);color:var(--yellow);}
+.tag-essential{background:rgba(124,111,255,.1);color:var(--electric);}
+.tag-power{background:rgba(0,229,204,.1);color:var(--teal);}
+.tag-deep{background:rgba(255,107,255,.1);color:var(--pink);}
+.lesson-detail{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:2rem;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-14px);}to{opacity:1;transform:translateY(0);}}
+.lesson-header{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
+.lesson-header-left h2{font-family:var(--sans);font-size:1.25rem;font-weight:700;color:var(--text);margin-bottom:.3rem;}
+.lesson-header-left p{font-size:.78rem;color:var(--text2);}
+.close-btn{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);width:32px;height:32px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .2s;flex-shrink:0;}
+.close-btn:hover{border-color:var(--red);color:var(--red);}
+.lesson-body{padding:1.5rem;}
+.lesson-body p{font-size:.82rem;color:var(--text2);margin-bottom:.75rem;line-height:1.75;}
+.lesson-body h3{font-family:var(--sans);font-size:.95rem;font-weight:700;color:var(--text);margin:1.5rem 0 .6rem;}
+.code-block{background:var(--bg);border:1px solid var(--border2);border-radius:8px;overflow:hidden;margin:1rem 0;}
+.code-header{padding:.5rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg3);}
+.code-lang{font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;}
+.code-lang.pw{color:var(--green);}.code-lang.cc{color:var(--electric);}
+.copy-btn{font-size:.63rem;color:var(--text3);background:none;border:none;cursor:pointer;font-family:var(--mono);transition:color .2s;padding:0;}
+.copy-btn:hover{color:var(--green);}
+pre{padding:1rem;font-size:.76rem;line-height:1.85;overflow-x:auto;color:var(--text);scrollbar-width:thin;white-space:pre-wrap;word-break:break-all;}
+.kw{color:var(--purple);}.fn{color:var(--cyan);}.str{color:var(--green);}.cm{color:var(--text3);}.num{color:var(--orange);}.tp{color:var(--yellow);}
+.cc-kw{color:var(--electric);}.cc-str{color:var(--teal);}.cc-fn{color:var(--pink);}
+.note{border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1rem 0;font-size:.78rem;color:var(--text2);}
+.note strong{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.4rem;}
+.note.yellow{background:rgba(255,209,102,.05);border:1px solid rgba(255,209,102,.2);border-left:3px solid var(--yellow);}
+.note.yellow strong{color:var(--yellow);}
+.note.red{background:rgba(255,77,109,.05);border:1px solid rgba(255,77,109,.2);border-left:3px solid var(--red);}
+.note.red strong{color:var(--red);}
+.note.cyan{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.15);border-left:3px solid var(--cyan);}
+.note.cyan strong{color:var(--cyan);}
+.note.electric{background:rgba(124,111,255,.05);border:1px solid rgba(124,111,255,.2);border-left:3px solid var(--electric);}
+.note.electric strong{color:var(--electric);}
+.table-wrap{overflow-x:auto;margin:1rem 0;}
+table{width:100%;border-collapse:collapse;font-size:.76rem;}
+th{background:var(--bg3);color:var(--text2);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;padding:.6rem 1rem;text-align:left;border:1px solid var(--border);}
+td{padding:.6rem 1rem;border:1px solid var(--border);color:var(--text);vertical-align:top;}
+tr:hover td{background:var(--bg3);}
+td:first-child{color:var(--cyan);}
+.qa-item{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:.75rem;background:var(--bg);}
+.qa-q{padding:1rem 1.25rem;cursor:pointer;display:flex;align-items:flex-start;gap:1rem;transition:background .2s;}
+.qa-q:hover{background:var(--bg3);}
+.qa-num{border-radius:5px;padding:.1rem .5rem;font-size:.63rem;font-weight:700;flex-shrink:0;margin-top:.1rem;}
+.qa-num.pw{background:rgba(0,255,135,.1);color:var(--green);border:1px solid rgba(0,255,135,.15);}
+.qa-num.cc{background:rgba(124,111,255,.1);color:var(--electric);border:1px solid rgba(124,111,255,.15);}
+.qa-question{font-size:.83rem;color:var(--text);flex:1;}
+.qa-arrow{color:var(--text3);font-size:.8rem;flex-shrink:0;transition:transform .2s;}
+.qa-item.open .qa-arrow{transform:rotate(90deg);}
+.qa-a{display:none;padding:1rem 1.25rem;font-size:.78rem;color:var(--text2);line-height:1.75;border-top:1px solid var(--border);}
+.qa-item.open .qa-a{display:block;}
+.checklist{list-style:none;margin:.5rem 0;}
+.checklist li{padding:.4rem 0;font-size:.78rem;color:var(--text2);display:flex;align-items:flex-start;gap:.75rem;line-height:1.6;}
+.checklist li::before{content:'✓';font-weight:700;flex-shrink:0;}
+.checklist.pw li::before{color:var(--green);}
+.checklist.cc li::before{color:var(--electric);}
+.progress-bar{background:var(--border);border-radius:4px;height:3px;margin-bottom:2rem;overflow:hidden;}
+.progress-fill{height:100%;border-radius:4px;transition:width .5s ease;}
+.progress-fill.pw{background:linear-gradient(90deg,var(--green),var(--cyan));}
+.progress-fill.cc{background:linear-gradient(90deg,var(--electric),var(--teal));}
+.back-btn{display:inline-flex;align-items:center;gap:.5rem;font-size:.73rem;color:var(--text2);background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:.4rem .9rem;cursor:pointer;margin-bottom:1.5rem;transition:all .2s;font-family:var(--mono);}
+.back-btn.pw:hover{color:var(--green);border-color:var(--green);}
+.back-btn.cc:hover{color:var(--electric);border-color:var(--electric);}
+.priority-list{list-style:none;margin:1rem 0;}
+.priority-list li{display:flex;align-items:flex-start;gap:1rem;padding:.75rem 1rem;border:1px solid var(--border);border-radius:8px;margin-bottom:.5rem;background:var(--bg);font-size:.78rem;}
+.pnum{border-radius:5px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;}
+.pnum.pw{background:rgba(0,255,135,.08);color:var(--green);border:1px solid rgba(0,255,135,.2);}
+.pnum.cc{background:rgba(124,111,255,.08);color:var(--electric);border:1px solid rgba(124,111,255,.2);}
+.pcontent strong{color:var(--text);display:block;margin-bottom:.15rem;}
+.pcontent code{font-size:.7rem;color:var(--green);}
+.icode{font-size:.73rem;color:var(--green);background:rgba(0,255,135,.06);padding:.1rem .35rem;border-radius:3px;border:1px solid rgba(0,255,135,.12);}
+footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2rem;text-align:center;font-size:.7rem;color:var(--text3);}
+.hidden{display:none!important;}
+@media(max-width:640px){.hero-stats{gap:1.2rem;}.stat-num{font-size:1.5rem;}.lessons-grid{grid-template-columns:1fr;}.nav-links{display:none;}.guide-cards{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
+<div class="orb orb-cc-1" id="orb-cc-1"></div>
+<div class="orb orb-cc-2" id="orb-cc-2"></div>
 
-<nav>
-  <div class="nav-brand">PW Guide</div>
+<nav id="main-nav">
+  <div class="nav-brand" id="nav-brand" onclick="goHome()">AI Test Guide</div>
   <div class="nav-divider"></div>
-  <div class="nav-links">
-    <button class="nav-link" onclick="showHome()">Home</button>
-    <button class="nav-link" onclick="openLesson(0)">Overview</button>
-    <button class="nav-link" onclick="openLesson(1)">What is PW</button>
-    <button class="nav-link" onclick="openLesson(2)">Setup</button>
-    <button class="nav-link" onclick="openLesson(3)">Locators</button>
-    <button class="nav-link" onclick="openLesson(4)">Actions</button>
-    <button class="nav-link" onclick="openLesson(5)">Assertions</button>
-    <button class="nav-link" onclick="openLesson(6)">Waits</button>
-    <button class="nav-link" onclick="openLesson(7)">POM</button>
-    <button class="nav-link" onclick="openLesson(8)">Fixtures</button>
-    <button class="nav-link" onclick="openLesson(9)">API Testing</button>
-    <button class="nav-link" onclick="openLesson(10)">Debug</button>
-    <button class="nav-link" onclick="openLesson(11)">Q&amp;A</button>
+  <div class="nav-links" id="nav-links">
+    <button class="nav-link" onclick="goHome()">Home</button>
   </div>
+  <button class="nav-home-btn" id="nav-home-btn" onclick="goHome()">&#8962; Home</button>
 </nav>
 
-<div id="home-view">
-  <div class="hero">
-    <div class="hero-badge"><span></span> Interview Preparation Course</div>
-    <h1><span class="accent">Playwright</span><br><span class="dim">TypeScript</span> Guide</h1>
-    <p class="hero-sub">Complete SDET/QA interview prep. Lessons, code examples, and model answers &mdash; built for working professionals.</p>
-    <div class="hero-stats">
-      <div class="stat"><div class="stat-num">13</div><div class="stat-label">Lessons</div></div>
-      <div class="stat"><div class="stat-num">40+</div><div class="stat-label">Code Examples</div></div>
-      <div class="stat"><div class="stat-num">30+</div><div class="stat-label">Interview Q&amp;A</div></div>
-    </div>
+<!-- LANDING -->
+<div id="landing-view">
+  <div class="landing-hero">
+    <div class="landing-badge"><span></span> testautomationguide.in</div>
+    <h1>AI <span class="g">Test</span> <span class="e">Automation</span><br>Guide</h1>
+    <p class="landing-sub">Expert-level guides for modern QA professionals. Choose your path below.</p>
   </div>
-  <div class="container">
-    <div class="section-label">All Lessons</div>
-    <div class="lessons-grid" id="lessons-grid"></div>
-    <div class="section-label">Quick Q&amp;A Preview</div>
-    <div id="home-qa"></div>
+  <div class="guide-cards">
+    <div class="guide-card pw" onclick="openGuide('pw')">
+      <div class="guide-card-icon">&#127921;</div>
+      <div class="guide-card-title">Playwright Guide</div>
+      <div class="guide-card-desc">Complete TypeScript interview prep &mdash; locators, fixtures, POM, API testing, debugging, and 40+ real Q&amp;As for SDET interviews.</div>
+      <div class="guide-card-meta">
+        <span class="guide-meta-item">&#128218; 13 Lessons</span>
+        <span class="guide-meta-item">&#128161; 40+ Examples</span>
+        <span class="guide-meta-item">&#127919; 30+ Q&amp;As</span>
+      </div>
+      <button class="guide-card-cta">Open Guide &rarr;</button>
+    </div>
+    <div class="guide-card cc" onclick="openGuide('cc')">
+      <div class="guide-card-icon">&#9889;</div>
+      <div class="guide-card-title">Claude Code CLI Guide</div>
+      <div class="guide-card-desc">Deep-dive into Anthropic's Claude Code &mdash; slash commands, skills, hooks, MCP servers (Playwright MCP), memory, settings, IDE integration and more.</div>
+      <div class="guide-card-meta">
+        <span class="guide-meta-item">&#128218; 12 Lessons</span>
+        <span class="guide-meta-item">&#128161; 35+ Examples</span>
+        <span class="guide-meta-item">&#127919; 25+ Q&amp;As</span>
+      </div>
+      <button class="guide-card-cta">Open Guide &rarr;</button>
+    </div>
   </div>
 </div>
 
-<div id="lesson-view" class="hidden">
-  <div class="container" style="padding-top:1.5rem">
-    <button class="back-btn" onclick="showHome()">&larr; Back to lessons</button>
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-    <div id="lesson-content"></div>
+<!-- PLAYWRIGHT VIEW -->
+<div id="pw-view" class="hidden">
+  <div class="hero">
+    <div class="hero-badge pw"><span></span> Interview Preparation</div>
+    <h1><span class="accent-pw">Playwright</span><br><span class="dim">TypeScript</span> Guide</h1>
+    <p class="hero-sub">Complete SDET/QA interview prep. Lessons, code examples, and model answers &mdash; built for working professionals.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num pw">13</div><div class="stat-label">Lessons</div></div>
+      <div class="stat"><div class="stat-num pw">40+</div><div class="stat-label">Examples</div></div>
+      <div class="stat"><div class="stat-num pw">30+</div><div class="stat-label">Q&amp;As</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div id="pw-home-section">
+      <div class="section-label">All Lessons</div>
+      <div class="lessons-grid" id="pw-grid"></div>
+      <div class="section-label">Quick Q&amp;A Preview</div>
+      <div id="pw-home-qa"></div>
+    </div>
+    <div id="pw-lesson-section" class="hidden">
+      <button class="back-btn pw" onclick="closePwLesson()">&larr; Back to Playwright lessons</button>
+      <div class="progress-bar"><div class="progress-fill pw" id="pw-prog"></div></div>
+      <div id="pw-lesson-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CLAUDE CODE VIEW -->
+<div id="cc-view" class="hidden">
+  <div class="hero">
+    <div class="hero-badge cc"><span></span> CLI Deep Dive</div>
+    <h1><span class="accent-cc">Claude Code</span><br><span class="dim">CLI</span> Guide</h1>
+    <p class="hero-sub">Master Anthropic's agentic coding CLI &mdash; from slash commands to MCP servers, skills, hooks, and full IDE integration.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num cc">12</div><div class="stat-label">Lessons</div></div>
+      <div class="stat"><div class="stat-num cc">35+</div><div class="stat-label">Examples</div></div>
+      <div class="stat"><div class="stat-num cc">25+</div><div class="stat-label">Q&amp;As</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div id="cc-home-section">
+      <div class="section-label">All Lessons</div>
+      <div class="lessons-grid" id="cc-grid"></div>
+      <div class="section-label">Quick Q&amp;A Preview</div>
+      <div id="cc-home-qa"></div>
+    </div>
+    <div id="cc-lesson-section" class="hidden">
+      <button class="back-btn cc" onclick="closeCcLesson()">&larr; Back to Claude Code lessons</button>
+      <div class="progress-bar"><div class="progress-fill cc" id="cc-prog"></div></div>
+      <div id="cc-lesson-content"></div>
+    </div>
   </div>
 </div>
 
 <footer>
-  Prepared by <span>Rajib Chakraborty</span> &middot; rajib.chakraborty91@gmail.com &middot; &copy; 2026
+  Prepared by <span class="g">Rajib Chakraborty</span> &middot; <span class="e">testautomationguide.in</span>
 </footer>
 
-<script>
+<!-- ALL LESSON CONTENT STORED IN TEMPLATES (parser-safe, no script interference) -->
 
-var LESSONS = [{"num": "00", "title": "Course Overview", "tag": "beginner", "desc": "What you will learn and how to use this course.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Course Overview</h2><p>A structured, hands-on interview-prep course for Playwright.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"info-note\">This course covers everything needed to crack Playwright interviews. Real code examples, Q&amp;A, and quizzes built for working QA professionals and SDETs.</div><p style=\"font-size:0.82rem;color:var(--text2);margin-bottom:1rem;\">Topics covered:</p><ul class=\"checklist\"><li>Playwright architecture, browsers, and differences from Selenium &amp; Cypress</li><li>Setting up Playwright with JavaScript &amp; TypeScript</li><li>Locators, selectors, and best practices</li><li>Click, type, navigate, upload, drag-drop and all interaction APIs</li><li>Assertions with expect() - soft, hard, custom matchers</li><li>Auto-waiting mechanics and when to use explicit waitFor</li><li>Page Object Model design pattern in TypeScript</li><li>Fixtures, hooks, and playwright.config.ts configuration</li><li>API testing with Playwright request context</li><li>Screenshots, videos, traces, and debugging with Trace Viewer</li><li>30+ most-asked interview questions with model answers</li></ul><div class=\"interview-note\"><strong>How to use:</strong> Each lesson ends with interview tips. Look for Interview Note boxes - those are the things interviewers ask about most.</div></div>"}, {"num": "01", "title": "What is Playwright?", "tag": "beginner", "desc": "Architecture, protocols, and comparison with Selenium and Cypress.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>What is Playwright?</h2><p>Architecture, protocols, and framework comparison.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><p style=\"font-size:0.82rem;color:var(--text2);margin-bottom:1rem;\">Playwright is an open-source automation framework by Microsoft (released 2020) for reliable end-to-end testing. It controls browsers using the Chrome DevTools Protocol (CDP) for Chromium/Chrome and WebKit, and its own protocol for Firefox.</p><div class=\"interview-note\"><strong>Interview Note:</strong> Playwright uses browser-native APIs (CDP / WebKit protocol) to control browsers directly, unlike Selenium WebDriver which uses HTTP. This gives Playwright faster and more stable automation.</div><p style=\"font-size:0.78rem;color:var(--text3);margin:1.25rem 0 0.5rem;letter-spacing:0.05em;text-transform:uppercase;\">Playwright vs Selenium vs Cypress</p><div class=\"table-wrap\"><table><thead><tr><th>Feature</th><th>Playwright</th><th>Selenium</th><th>Cypress</th></tr></thead><tbody><tr><td>Multi-browser</td><td>Chrome, FF, Safari</td><td>All browsers</td><td>Chrome, FF, Edge</td></tr><tr><td>Multi-tab/iframe</td><td>Native support</td><td>Limited</td><td>No multi-tab</td></tr><tr><td>Auto-waiting</td><td>Built-in</td><td>Manual waits</td><td>Built-in</td></tr><tr><td>API Testing</td><td>Built-in</td><td>No</td><td>Via plugin only</td></tr><tr><td>Languages</td><td>JS,TS,Python,Java,C#</td><td>Many languages</td><td>JS/TS only</td></tr><tr><td>Parallel exec</td><td>Native workers</td><td>Grid needed</td><td>Paid feature</td></tr><tr><td>Mobile emulation</td><td>Built-in</td><td>Appium needed</td><td>Limited</td></tr><tr><td>Trace viewer</td><td>Built-in</td><td>No</td><td>Time-travel</td></tr></tbody></table></div><p style=\"font-size:0.78rem;color:var(--text3);margin:1.25rem 0 0.5rem;letter-spacing:0.05em;text-transform:uppercase;\">Architecture</p><ul class=\"priority-list\"><li><div class=\"priority-num\">1</div><div class=\"priority-content\"><strong>Test Runner (Node.js)</strong><code>@playwright/test manages scheduling, parallelism, reporting</code></div></li><li><div class=\"priority-num\">2</div><div class=\"priority-content\"><strong>Browser Server (separate process)</strong><code>Playwright launches browsers as a separate OS process for crash isolation</code></div></li><li><div class=\"priority-num\">3</div><div class=\"priority-content\"><strong>CDP / WebSocket Communication</strong><code>Test runner communicates via WebSocket using CDP (Chrome)</code></div></li><li><div class=\"priority-num\">4</div><div class=\"priority-content\"><strong>Browser Contexts (Isolation)</strong><code>Each test gets its own BrowserContext - like incognito. Cookies, storage fully isolated</code></div></li></ul><div class=\"interview-note\"><strong>Quiz Answer:</strong> Q: Which protocol does Playwright use to control Chromium?<br>A: Chrome DevTools Protocol (CDP) - gives direct low-level browser access, enabling network interception, performance monitoring.</div></div>"}, {"num": "02", "title": "Setup & Installation", "tag": "beginner", "desc": "Install Playwright, understand config file, project structure, and CLI commands.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Setup &amp; Installation</h2><p>Get a Playwright project running from scratch.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"interview-note\"><strong>Interview Note:</strong> \"How do you install Playwright?\" - npm init playwright@latest scaffolds the project. Playwright bundles its own browser binaries: Chromium, Firefox, WebKit - installed via npx playwright install.</div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">bash</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\"># Create a new project</span>\nnpm init playwright@latest\n\n<span class=\"cm\"># OR add to existing project</span>\nnpm install -D @playwright/test\n\n<span class=\"cm\"># Install browsers (Chromium, Firefox, WebKit)</span>\nnpx playwright install\n\n<span class=\"cm\"># Install only specific browser</span>\nnpx playwright install chromium</pre></div><p style=\"font-size:0.78rem;color:var(--text3);margin:1.25rem 0 0.5rem;letter-spacing:0.05em;text-transform:uppercase;\">playwright.config.ts Key Settings</p><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"kw\">import</span> { defineConfig, devices } <span class=\"kw\">from</span> <span class=\"str\">'@playwright/test'</span>;\n\n<span class=\"kw\">export default</span> <span class=\"fn\">defineConfig</span>({\n  testDir: <span class=\"str\">'./tests'</span>,\n  fullyParallel: <span class=\"num\">true</span>,\n  retries: <span class=\"num\">2</span>,\n  workers: <span class=\"num\">4</span>,\n  reporter: <span class=\"str\">'html'</span>,\n  use: {\n    baseURL: <span class=\"str\">'https://example.com'</span>,\n    headless: <span class=\"num\">true</span>,\n    screenshot: <span class=\"str\">'only-on-failure'</span>,\n    video: <span class=\"str\">'retain-on-failure'</span>,\n    trace: <span class=\"str\">'on-first-retry'</span>,\n  },\n  projects: [\n    { name: <span class=\"str\">'chromium'</span>, use: { ...devices[<span class=\"str\">'Desktop Chrome'</span>] } },\n    { name: <span class=\"str\">'firefox'</span>,  use: { ...devices[<span class=\"str\">'Desktop Firefox'</span>] } },\n    { name: <span class=\"str\">'webkit'</span>,   use: { ...devices[<span class=\"str\">'Desktop Safari'</span>] } },\n  ],\n});</pre></div><p style=\"font-size:0.78rem;color:var(--text3);margin:1.25rem 0 0.5rem;letter-spacing:0.05em;text-transform:uppercase;\">CLI Reference</p><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">bash</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre>npx playwright test                   <span class=\"cm\"># Run all tests</span>\nnpx playwright test login.spec.ts    <span class=\"cm\"># Specific file</span>\nnpx playwright test --ui             <span class=\"cm\"># Interactive UI mode</span>\nnpx playwright test --headed         <span class=\"cm\"># See browser</span>\nnpx playwright test --debug          <span class=\"cm\"># Step-by-step debugger</span>\nnpx playwright show-report           <span class=\"cm\"># Open HTML report</span></pre></div></div>"}, {"num": "03", "title": "Locators & Selectors", "tag": "core", "desc": "All selector strategies, priority order, and resilient locator patterns.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Locators &amp; Selectors</h2><p>Selector strategies, priority order, and best practices.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"interview-note\"><strong>Interview Note:</strong> \"What is a Locator vs ElementHandle?\" - Locators are lazy: they re-query the DOM on each action and auto-wait. ElementHandles are eager snapshots and can go stale. Always prefer Locators.</div><p style=\"font-size:0.78rem;color:var(--text3);margin:1.25rem 0 0.5rem;letter-spacing:0.05em;text-transform:uppercase;\">Locator Priority (Best to Worst)</p><ul class=\"priority-list\"><li><div class=\"priority-num\">1</div><div class=\"priority-content\"><strong>Role-based (ARIA) - Best</strong><code>page.getByRole('button', {name: 'Submit'})</code><br><span style=\"font-size:0.72rem;color:var(--text3)\">Most resilient - mirrors how assistive tech sees the page.</span></div></li><li><div class=\"priority-num\">2</div><div class=\"priority-content\"><strong>Label / Placeholder</strong><code>page.getByLabel('Email') / getByPlaceholder('...')</code><br><span style=\"font-size:0.72rem;color:var(--text3)\">Great for form inputs. Very readable.</span></div></li><li><div class=\"priority-num\">3</div><div class=\"priority-content\"><strong>Text Content</strong><code>page.getByText('Welcome back')</code><br><span style=\"font-size:0.72rem;color:var(--text3)\">Good for headings. Use {exact:true} for strict matching.</span></div></li><li><div class=\"priority-num\">4</div><div class=\"priority-content\"><strong>Test ID</strong><code>page.getByTestId('login-btn')</code><br><span style=\"font-size:0.72rem;color:var(--text3)\">Requires data-testid attribute. Best for dynamic pages.</span></div></li><li class=\"bad\"><div class=\"priority-num\">5</div><div class=\"priority-content\"><strong>CSS / XPath - Last Resort</strong><code>page.locator('.btn-primary')</code><br><span style=\"font-size:0.72rem;color:var(--text3)\">Fragile if UI changes. Use only as last resort.</span></div></li></ul><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// ARIA role - best approach</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'button'</span>, { name: <span class=\"str\">'Sign in'</span> }).<span class=\"fn\">click</span>();\n\n<span class=\"cm\">// Form label</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Username'</span>).<span class=\"fn\">fill</span>(<span class=\"str\">'john@example.com'</span>);\n\n<span class=\"cm\">// Test ID</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByTestId</span>(<span class=\"str\">'submit-btn'</span>).<span class=\"fn\">click</span>();\n\n<span class=\"cm\">// Chain locators for scoping</span>\n<span class=\"kw\">const</span> row = page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'row'</span>, { name: <span class=\"str\">'John Doe'</span> });\n<span class=\"kw\">await</span> row.<span class=\"fn\">getByRole</span>(<span class=\"str\">'button'</span>, { name: <span class=\"str\">'Delete'</span> }).<span class=\"fn\">click</span>();\n\n<span class=\"cm\">// Filter locators</span>\n<span class=\"kw\">const</span> active = page.<span class=\"fn\">locator</span>(<span class=\"str\">'.card'</span>).<span class=\"fn\">filter</span>({ hasText: <span class=\"str\">'Active'</span> });\n\n<span class=\"cm\">// nth element</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'listitem'</span>).<span class=\"fn\">nth</span>(<span class=\"num\">2</span>).<span class=\"fn\">click</span>();\n\n<span class=\"cm\">// Inside iframe</span>\n<span class=\"kw\">const</span> frame = page.<span class=\"fn\">frameLocator</span>(<span class=\"str\">'#payment-frame'</span>);\n<span class=\"kw\">await</span> frame.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Card number'</span>).<span class=\"fn\">fill</span>(<span class=\"str\">'4242424242424242'</span>);</pre></div><div class=\"interview-note\"><strong>Quiz Answer:</strong> Locators re-query the DOM on every action and auto-wait, immune to stale element errors. ElementHandles capture the element at a point in time and can become stale. Always use Locators.</div></div>"}, {"num": "04", "title": "Actions & Interactions", "tag": "core", "desc": "Clicks, keyboard, dropdowns, file uploads, drag & drop, tabs, dialogs.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Actions &amp; Interactions</h2><p>Every interaction API in Playwright.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Common Actions</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// Click variants</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'button'</span>).<span class=\"fn\">click</span>();\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByText</span>(<span class=\"str\">'Menu'</span>).<span class=\"fn\">dblclick</span>();\n<span class=\"kw\">await</span> element.<span class=\"fn\">click</span>({ button: <span class=\"str\">'right'</span> });        <span class=\"cm\">// right-click</span>\n<span class=\"kw\">await</span> element.<span class=\"fn\">click</span>({ modifiers: [<span class=\"str\">'Control'</span>] }); <span class=\"cm\">// Ctrl+click</span>\n\n<span class=\"cm\">// Typing</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Name'</span>).<span class=\"fn\">fill</span>(<span class=\"str\">'Rajib'</span>);\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'OTP'</span>).<span class=\"fn\">pressSequentially</span>(<span class=\"str\">'1234'</span>);\n\n<span class=\"cm\">// Select dropdown</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Country'</span>).<span class=\"fn\">selectOption</span>(<span class=\"str\">'India'</span>);\n\n<span class=\"cm\">// Checkbox / Radio</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Accept terms'</span>).<span class=\"fn\">check</span>();\n\n<span class=\"cm\">// File upload</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Upload'</span>).<span class=\"fn\">setInputFiles</span>(<span class=\"str\">'./resume.pdf'</span>);\n\n<span class=\"cm\">// Drag and Drop</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByTestId</span>(<span class=\"str\">'card'</span>).<span class=\"fn\">dragTo</span>(page.<span class=\"fn\">getByTestId</span>(<span class=\"str\">'dropzone'</span>));</pre></div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - New Tabs &amp; Dialogs</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// Capture new tab opened by click</span>\n<span class=\"kw\">const</span> [newPage] = <span class=\"kw\">await</span> <span class=\"type\">Promise</span>.<span class=\"fn\">all</span>([\n  context.<span class=\"fn\">waitForEvent</span>(<span class=\"str\">'page'</span>),\n  page.<span class=\"fn\">getByText</span>(<span class=\"str\">'Open in new tab'</span>).<span class=\"fn\">click</span>(),\n]);\n<span class=\"kw\">await</span> newPage.<span class=\"fn\">waitForLoadState</span>();\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(newPage).<span class=\"fn\">toHaveTitle</span>(<span class=\"str\">'Dashboard'</span>);\n\n<span class=\"cm\">// Handle browser dialogs</span>\npage.<span class=\"fn\">on</span>(<span class=\"str\">'dialog'</span>, <span class=\"kw\">async</span> dialog =&gt; {\n  console.<span class=\"fn\">log</span>(dialog.<span class=\"fn\">message</span>());\n  <span class=\"kw\">await</span> dialog.<span class=\"fn\">accept</span>();\n});</pre></div><div class=\"interview-note\"><strong>Interview Note:</strong> The Promise.all() pattern for new tabs is a classic interview question. You MUST start listening BEFORE clicking - clicking first risks missing the event (race condition).</div></div>"}, {"num": "05", "title": "Assertions", "tag": "core", "desc": "Auto-retrying assertions, hard vs soft, and full expect() reference.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Assertions</h2><p>Auto-retrying assertions with expect().</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"info-note\">Playwright expect() auto-retries for up to 5 seconds (configurable) until the assertion passes or times out. This eliminates most flaky tests caused by timing issues.</div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Full Reference</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// PAGE ASSERTIONS</span>\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(page).<span class=\"fn\">toHaveURL</span>(<span class=\"str\">'https://example.com/dashboard'</span>);\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(page).<span class=\"fn\">toHaveTitle</span>(<span class=\"str\">/Dashboard/</span>);\n\n<span class=\"cm\">// ELEMENT ASSERTIONS</span>\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toBeVisible</span>();\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toBeHidden</span>();\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toBeEnabled</span>();\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toBeDisabled</span>();\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toBeChecked</span>();\n\n<span class=\"cm\">// TEXT &amp; VALUE</span>\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toHaveText</span>(<span class=\"str\">'Welcome, Rajib'</span>);\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toContainText</span>(<span class=\"str\">'Welcome'</span>);\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toHaveValue</span>(<span class=\"str\">'user@example.com'</span>);\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toHaveAttribute</span>(<span class=\"str\">'href'</span>, <span class=\"str\">'/home'</span>);\n\n<span class=\"cm\">// COUNT</span>\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'listitem'</span>)).<span class=\"fn\">toHaveCount</span>(<span class=\"num\">5</span>);\n\n<span class=\"cm\">// SOFT ASSERTIONS (continue on failure)</span>\n<span class=\"kw\">await</span> expect.soft(locator).<span class=\"fn\">toBeVisible</span>();\n<span class=\"kw\">await</span> expect.soft(locator).<span class=\"fn\">toHaveText</span>(<span class=\"str\">'Expected Text'</span>);\n\n<span class=\"cm\">// CUSTOM TIMEOUT</span>\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(locator).<span class=\"fn\">toBeVisible</span>({ timeout: <span class=\"num\">10000</span> });</pre></div><div class=\"table-wrap\"><table><thead><tr><th>Hard Assertion (default)</th><th>Soft Assertion</th></tr></thead><tbody><tr><td>Throws immediately on failure. Test stops. Use for critical path.</td><td>expect.soft() records failure but continues. All failures reported together. Ideal for form validation.</td></tr></tbody></table></div><div class=\"interview-note\"><strong>Quiz Answer:</strong> Validate 5 form fields without stopping on first failure? Use expect.soft() for each assertion. All failures collected and reported together at the end.</div></div>"}, {"num": "06", "title": "Waits & Auto-waiting", "tag": "core", "desc": "Playwright's auto-wait checklist and when to use explicit waits.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Waits &amp; Auto-waiting</h2><p>Auto-waiting mechanics and explicit waits.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><p style=\"font-size:0.82rem;color:var(--text2);margin-bottom:1rem;\">Before performing any action, Playwright automatically checks ALL of the following:</p><ul class=\"checklist\"><li>Element is attached to the DOM</li><li>Element is visible (not hidden, not opacity:0)</li><li>Element is stable (not moving or animating)</li><li>Element receives pointer events (not obscured by overlay)</li><li>Element is enabled (not disabled attribute)</li></ul><p style=\"font-size:0.78rem;color:var(--text3);margin:1.25rem 0 0.5rem;letter-spacing:0.05em;text-transform:uppercase;\">Explicit Waits - When to Use</p><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// Wait for navigation / page load state</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">waitForLoadState</span>(<span class=\"str\">'networkidle'</span>);\n<span class=\"kw\">await</span> page.<span class=\"fn\">waitForLoadState</span>(<span class=\"str\">'domcontentloaded'</span>);\n\n<span class=\"cm\">// Wait for URL to change</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">waitForURL</span>(<span class=\"str\">'**/dashboard'</span>);\n\n<span class=\"cm\">// Wait for network request/response</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">waitForResponse</span>(<span class=\"str\">'**/api/users'</span>);\n\n<span class=\"cm\">// Wait for element state change</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'button'</span>).<span class=\"fn\">waitFor</span>({ state: <span class=\"str\">'visible'</span> });\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByText</span>(<span class=\"str\">'Loading...'</span>).<span class=\"fn\">waitFor</span>({ state: <span class=\"str\">'hidden'</span> });\n\n<span class=\"cm\">// AVOID: page.waitForTimeout(3000)</span></pre></div><div class=\"warning-note\"><strong>Warning:</strong> Never use page.waitForTimeout(ms) in production tests. It is a red flag in interviews showing poor async understanding. Use event-based waits or auto-retrying assertions instead.</div></div>"}, {"num": "07", "title": "Page Object Model", "tag": "advanced", "desc": "The most important design pattern for scalable test automation.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Page Object Model (POM)</h2><p>Design pattern for scalable, maintainable test automation.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"interview-note\"><strong>Interview Note:</strong> \"Implement a Page Object Model for a login page.\" Be ready to write this from scratch in TypeScript. Benefits: reusability, readability, single point of change when UI changes.</div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - LoginPage.ts</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"kw\">import</span> { <span class=\"type\">Page</span>, <span class=\"type\">Locator</span> } <span class=\"kw\">from</span> <span class=\"str\">'@playwright/test'</span>;\n\n<span class=\"kw\">export class</span> <span class=\"type\">LoginPage</span> {\n  <span class=\"kw\">readonly</span> page: <span class=\"type\">Page</span>;\n  <span class=\"kw\">readonly</span> emailInput: <span class=\"type\">Locator</span>;\n  <span class=\"kw\">readonly</span> passwordInput: <span class=\"type\">Locator</span>;\n  <span class=\"kw\">readonly</span> loginButton: <span class=\"type\">Locator</span>;\n  <span class=\"kw\">readonly</span> errorMessage: <span class=\"type\">Locator</span>;\n\n  <span class=\"fn\">constructor</span>(page: <span class=\"type\">Page</span>) {\n    <span class=\"kw\">this</span>.page = page;\n    <span class=\"kw\">this</span>.emailInput = page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Email'</span>);\n    <span class=\"kw\">this</span>.passwordInput = page.<span class=\"fn\">getByLabel</span>(<span class=\"str\">'Password'</span>);\n    <span class=\"kw\">this</span>.loginButton = page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'button'</span>, { name: <span class=\"str\">'Sign In'</span> });\n    <span class=\"kw\">this</span>.errorMessage = page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'alert'</span>);\n  }\n\n  <span class=\"kw\">async</span> <span class=\"fn\">goto</span>() {\n    <span class=\"kw\">await this</span>.page.<span class=\"fn\">goto</span>(<span class=\"str\">'/login'</span>);\n  }\n\n  <span class=\"kw\">async</span> <span class=\"fn\">login</span>(email: <span class=\"type\">string</span>, password: <span class=\"type\">string</span>) {\n    <span class=\"kw\">await this</span>.emailInput.<span class=\"fn\">fill</span>(email);\n    <span class=\"kw\">await this</span>.passwordInput.<span class=\"fn\">fill</span>(password);\n    <span class=\"kw\">await this</span>.loginButton.<span class=\"fn\">click</span>();\n  }\n\n  <span class=\"kw\">async</span> <span class=\"fn\">loginAndExpectSuccess</span>(email: <span class=\"type\">string</span>, password: <span class=\"type\">string</span>) {\n    <span class=\"kw\">await this</span>.<span class=\"fn\">login</span>(email, password);\n    <span class=\"kw\">await this</span>.page.<span class=\"fn\">waitForURL</span>(<span class=\"str\">'**/dashboard'</span>);\n  }\n}</pre></div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - login.spec.ts</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"kw\">import</span> { test, expect } <span class=\"kw\">from</span> <span class=\"str\">'@playwright/test'</span>;\n<span class=\"kw\">import</span> { <span class=\"type\">LoginPage</span> } <span class=\"kw\">from</span> <span class=\"str\">'./pages/LoginPage'</span>;\n\n<span class=\"fn\">test</span>(<span class=\"str\">'valid login redirects to dashboard'</span>, <span class=\"kw\">async</span> ({ page }) =&gt; {\n  <span class=\"kw\">const</span> loginPage = <span class=\"kw\">new</span> <span class=\"type\">LoginPage</span>(page);\n  <span class=\"kw\">await</span> loginPage.<span class=\"fn\">goto</span>();\n  <span class=\"kw\">await</span> loginPage.<span class=\"fn\">loginAndExpectSuccess</span>(<span class=\"str\">'user@test.com'</span>, <span class=\"str\">'secret'</span>);\n  <span class=\"kw\">await</span> <span class=\"fn\">expect</span>(page).<span class=\"fn\">toHaveURL</span>(<span class=\"str\">/dashboard/</span>);\n});\n\n<span class=\"fn\">test</span>(<span class=\"str\">'invalid login shows error'</span>, <span class=\"kw\">async</span> ({ page }) =&gt; {\n  <span class=\"kw\">const</span> loginPage = <span class=\"kw\">new</span> <span class=\"type\">LoginPage</span>(page);\n  <span class=\"kw\">await</span> loginPage.<span class=\"fn\">goto</span>();\n  <span class=\"kw\">await</span> loginPage.<span class=\"fn\">login</span>(<span class=\"str\">'wrong@test.com'</span>, <span class=\"str\">'wrongpass'</span>);\n  <span class=\"kw\">await</span> <span class=\"fn\">expect</span>(loginPage.errorMessage).<span class=\"fn\">toBeVisible</span>();\n});</pre></div></div>"}, {"num": "08", "title": "Fixtures & Hooks", "tag": "advanced", "desc": "Playwright's dependency injection system, built-in fixtures, and custom fixtures.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Fixtures &amp; Hooks</h2><p>Dependency injection, setup/teardown patterns.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><p style=\"font-size:0.78rem;color:var(--text3);margin-bottom:0.75rem;letter-spacing:0.05em;text-transform:uppercase;\">Built-in Fixtures</p><div class=\"fixture-grid\"><div class=\"fixture-cell header\">Fixture</div><div class=\"fixture-cell header\">Description</div><div class=\"fixture-cell key\">page</div><div class=\"fixture-cell\">Isolated browser page per test</div><div class=\"fixture-cell key\">context</div><div class=\"fixture-cell\">Browser context (session isolation - like incognito)</div><div class=\"fixture-cell key\">browser</div><div class=\"fixture-cell\">Browser instance (shared across contexts)</div><div class=\"fixture-cell key\">request</div><div class=\"fixture-cell\">API request context for HTTP calls without a browser</div><div class=\"fixture-cell key\">browserName</div><div class=\"fixture-cell\">Current browser name, e.g. chromium, firefox</div><div class=\"fixture-cell key\">testInfo</div><div class=\"fixture-cell\">Test metadata, title, status, retry count, output path</div></div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Custom Fixture</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// fixtures.ts</span>\n<span class=\"kw\">import</span> { test <span class=\"kw\">as</span> base } <span class=\"kw\">from</span> <span class=\"str\">'@playwright/test'</span>;\n<span class=\"kw\">import</span> { <span class=\"type\">LoginPage</span> } <span class=\"kw\">from</span> <span class=\"str\">'./pages/LoginPage'</span>;\n\n<span class=\"kw\">export const</span> test = base.<span class=\"fn\">extend</span>({\n  loggedInPage: <span class=\"kw\">async</span> ({ page }, use) =&gt; {\n    <span class=\"kw\">const</span> loginPage = <span class=\"kw\">new</span> <span class=\"type\">LoginPage</span>(page);\n    <span class=\"kw\">await</span> loginPage.<span class=\"fn\">goto</span>();\n    <span class=\"kw\">await</span> loginPage.<span class=\"fn\">login</span>(<span class=\"str\">'user@test.com'</span>, <span class=\"str\">'pass123'</span>);\n    <span class=\"kw\">await</span> page.<span class=\"fn\">waitForURL</span>(<span class=\"str\">'**/dashboard'</span>);\n    <span class=\"kw\">await</span> <span class=\"fn\">use</span>(page); <span class=\"cm\">// inject into test</span>\n    <span class=\"cm\">// teardown runs here automatically</span>\n  },\n});</pre></div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Hooks</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre>test.<span class=\"fn\">beforeAll</span>(<span class=\"kw\">async</span> ({ browser }) =&gt; {\n  <span class=\"cm\">// Once before all tests</span>\n});\n\ntest.<span class=\"fn\">afterAll</span>(<span class=\"kw\">async</span> () =&gt; {\n  <span class=\"cm\">// Once after all tests</span>\n});\n\ntest.<span class=\"fn\">beforeEach</span>(<span class=\"kw\">async</span> ({ page }) =&gt; {\n  <span class=\"kw\">await</span> page.<span class=\"fn\">goto</span>(<span class=\"str\">'/'</span>);\n});\n\ntest.<span class=\"fn\">afterEach</span>(<span class=\"kw\">async</span> ({ page }, testInfo) =&gt; {\n  <span class=\"kw\">if</span> (testInfo.status !== testInfo.expectedStatus) {\n    <span class=\"kw\">await</span> page.<span class=\"fn\">screenshot</span>({ path: <span class=\"str\">'failed.png'</span> });\n  }\n});</pre></div></div>"}, {"num": "09", "title": "API Testing", "tag": "advanced", "desc": "Test REST APIs without a browser, mock and intercept network requests.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>API Testing</h2><p>Direct API testing and network interception/mocking.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Direct API Testing</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"kw\">import</span> { test, expect } <span class=\"kw\">from</span> <span class=\"str\">'@playwright/test'</span>;\n\n<span class=\"fn\">test</span>(<span class=\"str\">'GET /users returns 200'</span>, <span class=\"kw\">async</span> ({ request }) =&gt; {\n  <span class=\"kw\">const</span> response = <span class=\"kw\">await</span> request.<span class=\"fn\">get</span>(<span class=\"str\">'https://api.example.com/users'</span>);\n  <span class=\"fn\">expect</span>(response.<span class=\"fn\">status</span>()).<span class=\"fn\">toBe</span>(<span class=\"num\">200</span>);\n  <span class=\"kw\">const</span> body = <span class=\"kw\">await</span> response.<span class=\"fn\">json</span>();\n  <span class=\"fn\">expect</span>(body).<span class=\"fn\">toHaveLength</span>(<span class=\"num\">10</span>);\n  <span class=\"fn\">expect</span>(body[<span class=\"num\">0</span>]).<span class=\"fn\">toHaveProperty</span>(<span class=\"str\">'id'</span>);\n});\n\n<span class=\"fn\">test</span>(<span class=\"str\">'POST /users creates a user'</span>, <span class=\"kw\">async</span> ({ request }) =&gt; {\n  <span class=\"kw\">const</span> response = <span class=\"kw\">await</span> request.<span class=\"fn\">post</span>(<span class=\"str\">'/users'</span>, {\n    data: { name: <span class=\"str\">'Rajib'</span>, email: <span class=\"str\">'rajib@test.com'</span> },\n    headers: { <span class=\"str\">'Authorization'</span>: <span class=\"str\">'Bearer token123'</span> }\n  });\n  <span class=\"fn\">expect</span>(response.<span class=\"fn\">status</span>()).<span class=\"fn\">toBe</span>(<span class=\"num\">201</span>);\n});</pre></div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Network Mocking</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// Mock an API response</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">route</span>(<span class=\"str\">'**/api/products'</span>, <span class=\"kw\">async</span> route =&gt; {\n  <span class=\"kw\">await</span> route.<span class=\"fn\">fulfill</span>({\n    status: <span class=\"num\">200</span>,\n    contentType: <span class=\"str\">'application/json'</span>,\n    body: <span class=\"type\">JSON</span>.<span class=\"fn\">stringify</span>([{ id: <span class=\"num\">1</span>, name: <span class=\"str\">'Mock Product'</span> }]),\n  });\n});\n\n<span class=\"cm\">// Block analytics/tracking</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">route</span>(<span class=\"str\">'**/{analytics,tracking}/**'</span>, r =&gt; r.<span class=\"fn\">abort</span>());\n\n<span class=\"cm\">// Wait for specific response</span>\n<span class=\"kw\">const</span> [response] = <span class=\"kw\">await</span> <span class=\"type\">Promise</span>.<span class=\"fn\">all</span>([\n  page.<span class=\"fn\">waitForResponse</span>(<span class=\"str\">'**/api/login'</span>),\n  page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'button'</span>, { name: <span class=\"str\">'Login'</span> }).<span class=\"fn\">click</span>(),\n]);\n<span class=\"fn\">expect</span>(<span class=\"kw\">await</span> response.<span class=\"fn\">json</span>()).<span class=\"fn\">toHaveProperty</span>(<span class=\"str\">'token'</span>);</pre></div></div>"}, {"num": "10", "title": "Screenshots, Videos & Traces", "tag": "advanced", "desc": "Playwright's debugging toolkit \u2014 screenshots, video recording, Trace Viewer.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Screenshots, Videos &amp; Traces</h2><p>Capture evidence and debug with Trace Viewer.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Screenshots</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// Full page screenshot</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">screenshot</span>({ path: <span class=\"str\">'screenshot.png'</span>, fullPage: <span class=\"num\">true</span> });\n\n<span class=\"cm\">// Element-specific screenshot</span>\n<span class=\"kw\">await</span> page.<span class=\"fn\">getByRole</span>(<span class=\"str\">'dialog'</span>).<span class=\"fn\">screenshot</span>({ path: <span class=\"str\">'dialog.png'</span> });\n\n<span class=\"cm\">// Visual comparison (pixel-level diff)</span>\n<span class=\"kw\">await</span> <span class=\"fn\">expect</span>(page).<span class=\"fn\">toHaveScreenshot</span>(<span class=\"str\">'baseline.png'</span>);\n\n<span class=\"cm\">// In playwright.config.ts:</span>\n<span class=\"cm\">// screenshot: 'only-on-failure'</span></pre></div><div class=\"code-block\"><div class=\"code-header\"><span class=\"code-lang\">typescript - Video &amp; Trace</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">copy</button></div><pre><span class=\"cm\">// In playwright.config.ts:</span>\nuse: {\n  video: <span class=\"str\">'retain-on-failure'</span>,\n  trace: <span class=\"str\">'on-first-retry'</span>,\n}\n\n<span class=\"cm\">// Via CLI:</span>\nnpx playwright test --trace on\n\n<span class=\"cm\">// View the trace:</span>\nnpx playwright show-trace trace.zip</pre></div><div class=\"interview-note\"><strong>Interview Note:</strong> \"How do you debug a failing Playwright test?\" - Use Trace Viewer: npx playwright show-trace lets you step through each action, see DOM state, network requests, and console logs at every point. Also use --debug flag for Playwright Inspector.</div></div>"}, {"num": "11", "title": "Top Interview Q&A", "tag": "interview", "desc": "15 most frequently asked Playwright interview questions with model answers.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Top Interview Q&amp;A</h2><p>15 most-asked questions with model answers. Click to expand.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\" id=\"qa-body\"></div>"}, {"num": "12", "title": "Final Quiz Answers", "tag": "interview", "desc": "Answers to all quiz questions from throughout the course.", "content": "<div class=\"lesson-header\"><div class=\"lesson-header-left\"><h2>Final Quiz Answers</h2><p>All quiz answers from the course.</p></div><button class=\"close-btn\" onclick=\"showHome()\">&#x2715;</button></div><div class=\"lesson-body\"><div class=\"qa-item open\"><div class=\"qa-q\" onclick=\"toggleQA(this)\"><div class=\"qa-num\">L1</div><div class=\"qa-question\">Which protocol does Playwright use to control Chromium?</div><div class=\"qa-arrow\">&#x25B6;</div></div><div class=\"qa-a\">Correct: <strong style=\"color:var(--green)\">Chrome DevTools Protocol (CDP)</strong><br><br>Playwright uses CDP for Chromium giving direct low-level browser access. This enables network interception, performance monitoring, and more reliable automation than Selenium HTTP-based WebDriver protocol.</div></div><div class=\"qa-item\"><div class=\"qa-q\" onclick=\"toggleQA(this)\"><div class=\"qa-num\">L3</div><div class=\"qa-question\">Key difference between Locator and ElementHandle?</div><div class=\"qa-arrow\">&#x25B6;</div></div><div class=\"qa-a\" style=\"display:none\">Correct: <strong style=\"color:var(--green)\">Locators re-query the DOM on every action and auto-wait; ElementHandles can go stale.</strong></div></div><div class=\"qa-item\"><div class=\"qa-q\" onclick=\"toggleQA(this)\"><div class=\"qa-num\">L5</div><div class=\"qa-question\">Validate 5 form fields without stopping on first failure?</div><div class=\"qa-arrow\">&#x25B6;</div></div><div class=\"qa-a\" style=\"display:none\">Correct: <strong style=\"color:var(--green)\">Use expect.soft() for each assertion.</strong> Records failures but continues test execution. All failures are reported together at the end.</div></div><div class=\"interview-note\" style=\"margin-top:1.5rem\"><strong>Congratulations!</strong> You have covered all 13 lessons of Playwright TypeScript Interview Prep. Review the Q&amp;A section regularly and practise writing code from memory.</div></div>"}];
-var QA = [{"q": "What is Playwright and how does it differ from Selenium?", "a": "Playwright is a Microsoft open-source framework for end-to-end automation using CDP/WebSocket. Unlike Selenium HTTP-based WebDriver, Playwright has built-in auto-waiting, multi-tab support, network interception, and native parallel execution - no external grid needed."}, {"q": "What is the difference between a Locator and an ElementHandle?", "a": "Locators are lazy - they re-query the DOM on every action and auto-wait, immune to stale element errors. ElementHandles capture the element at a point in time and go invalid if the DOM updates. Always prefer Locators in modern Playwright."}, {"q": "How do you handle multiple browser contexts?", "a": "Each BrowserContext is like an independent incognito session with isolated cookies, storage, and auth. Use browser.newContext() to create one. Multiple contexts enable multi-user testing simultaneously."}, {"q": "Explain the Page Object Model pattern.", "a": "POM is a design pattern where each page is a class with its locators and action methods. Tests use these classes instead of raw selectors - reusable, readable, and one place to update when UI changes."}, {"q": "How do you handle new tabs or popups?", "a": "Use Promise.all() to listen for the page event BEFORE triggering the click. Start listening first, then click - this prevents missing the event due to a race condition."}, {"q": "What is auto-waiting in Playwright?", "a": "Before any action, Playwright auto-waits for element to be: attached, visible, stable, receiving pointer events, and enabled. This eliminates most explicit waits needed in Selenium."}, {"q": "What is a Fixture in Playwright?", "a": "Fixtures are Playwright dependency injection mechanism. Built-ins: page, context, browser, request. Custom fixtures via test.extend() share setup/teardown - e.g. providing an authenticated page to every test."}, {"q": "How do you perform API testing with Playwright?", "a": "Use the request fixture: const response = await request.get('/api/users'). Mock network calls with page.route() to return stubbed responses for UI test isolation."}, {"q": "How do you debug Playwright tests?", "a": "Use: --debug flag (Playwright Inspector), --headed (see browser), Trace Viewer (npx playwright show-trace) for time-travel debugging, and page.pause() to pause mid-test."}, {"q": "Difference between hard and soft assertions?", "a": "Hard assertions (expect()) stop the test immediately on failure. Soft assertions (expect.soft()) record the failure but continue execution. All soft failures are reported together at the end."}, {"q": "How do you run tests in parallel?", "a": "Set fullyParallel: true and workers: N in playwright.config.ts. Each worker runs in its own browser context. Use test.describe.configure({ mode: parallel }) within a file."}, {"q": "What is the Trace Viewer?", "a": "Trace Viewer records DOM snapshots, network, console, and screenshots per step. View with npx playwright show-trace - essential for debugging CI/CD pipeline failures."}, {"q": "How do you handle authentication across tests?", "a": "Save auth state once via storageState and reuse it. Use a custom fixture that logs in before the test and calls use(page). Avoids slow repeated UI logins across the test suite."}, {"q": "What is waitForLoadState and when to use it?", "a": "Waits for: load, domcontentloaded, or networkidle (no requests for 500ms). Use after navigation when elements are not ready despite the URL having changed."}, {"q": "How do you test iframes in Playwright?", "a": "Use page.frameLocator('#frame-id') to get a FrameLocator, then chain standard locator methods inside it - same API as regular locators, works for same-origin and cross-origin frames."}];
-var tagMap = {beginner:'tag-beginner',core:'tag-core',advanced:'tag-advanced',interview:'tag-interview'};
-var tagLabel = {beginner:'Beginner',core:'Core',advanced:'Advanced',interview:'Interview Prep'};
+<!-- PW LESSON 0 -->
+<template id="pw-tpl-0">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Course Overview</h2><p>Your complete Playwright TypeScript interview roadmap</p></div><button class="close-btn" onclick="closePwLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <p>This guide covers everything a senior QA/SDET needs to ace a Playwright TypeScript interview. Each lesson builds on the last, ending with a full Q&amp;A section.</p>
+    <h3>What You'll Master</h3>
+    <ul class="checklist pw">
+      <li>Playwright architecture and browser contexts</li>
+      <li>Locator strategies and auto-waiting</li>
+      <li>Page Object Model (POM) with TypeScript</li>
+      <li>Fixtures, hooks, and test isolation</li>
+      <li>API testing and response validation</li>
+      <li>Debugging: trace viewer, headed mode, step-through</li>
+      <li>CI/CD integration patterns</li>
+    </ul>
+    <div class="note yellow"><strong>&#128203; Interview Tip</strong>Interviewers love candidates who explain WHY Playwright over Selenium. Key answers: auto-waiting, multi-browser native support, built-in tracing, and TypeScript-first design.</div>
+  </div>
+</div>
+</template>
 
-function renderHome() {
-  var grid = document.getElementById('lessons-grid');
-  var html = '';
-  for (var i = 0; i < LESSONS.length; i++) {
-    var l = LESSONS[i];
-    html += '<div class="lesson-card" onclick="openLesson(' + i + ')">' +
-      '<div class="lesson-num">LESSON ' + l.num + '</div>' +
-      '<div class="lesson-title">' + l.title + '</div>' +
-      '<div class="lesson-desc">' + l.desc + '</div>' +
-      '<span class="lesson-tag ' + tagMap[l.tag] + '">' + tagLabel[l.tag] + '</span>' +
-      '</div>';
+<!-- PW LESSON 1 -->
+<template id="pw-tpl-1">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>What is Playwright?</h2><p>Architecture and competitive advantages</p></div><button class="close-btn" onclick="closePwLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <p>Playwright is an open-source end-to-end testing framework by Microsoft that communicates with browsers via CDP/WebSocket &mdash; bypassing WebDriver entirely.</p>
+    <h3>Architecture</h3>
+    <ul class="checklist pw">
+      <li><strong>BrowserType &rarr; Browser &rarr; BrowserContext &rarr; Page</strong> &mdash; clean four-layer model</li>
+      <li>Single API across Chromium, Firefox, and WebKit</li>
+      <li>Auto-waiting for actionability: visible, stable, enabled, editable</li>
+      <li>Isolated browser contexts &mdash; no shared state between tests</li>
+      <li>Network interception, HAR recording, and response mocking built-in</li>
+    </ul>
+    <div class="table-wrap"><table>
+      <tr><th>Feature</th><th>Playwright</th><th>Selenium</th></tr>
+      <tr><td>Protocol</td><td>CDP / WebSocket</td><td>WebDriver (HTTP)</td></tr>
+      <tr><td>Auto-wait</td><td>&#10003; Built-in</td><td>&#10005; Manual</td></tr>
+      <tr><td>Multi-tab</td><td>&#10003; Native</td><td>&#9888; Complex</td></tr>
+      <tr><td>Network mock</td><td>&#10003; page.route()</td><td>&#10005; External proxy</td></tr>
+      <tr><td>Trace viewer</td><td>&#10003; Built-in</td><td>&#10005;</td></tr>
+    </table></div>
+    <div class="note yellow"><strong>&#127919; Must-know answer</strong>"Playwright's auto-waiting checks six actionability conditions before interacting, eliminating flaky sleeps. Selenium requires manual explicit waits."</div>
+  </div>
+</div>
+</template>
+
+<!-- PW LESSON 2 -->
+<template id="pw-tpl-2">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Installation &amp; Setup</h2><p>Scaffold a production-ready project</p></div><button class="close-btn" onclick="closePwLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang pw">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm"># Create new project</span>
+npm init playwright@latest
+
+<span class="cm"># Add to existing project</span>
+npm install -D @playwright/test
+npx playwright install</pre>
+    </div>
+    <h3>playwright.config.ts Essentials</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang pw">typescript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="kw">import</span> { defineConfig, devices } <span class="kw">from</span> <span class="str">'@playwright/test'</span>;
+
+<span class="kw">export default</span> <span class="fn">defineConfig</span>({
+  testDir: <span class="str">'./tests'</span>,
+  fullyParallel: <span class="kw">true</span>,
+  retries: process.env.CI ? <span class="num">2</span> : <span class="num">0</span>,
+  reporter: <span class="str">'html'</span>,
+  use: {
+    baseURL: <span class="str">'https://example.com'</span>,
+    trace: <span class="str">'on-first-retry'</span>,
+    screenshot: <span class="str">'only-on-failure'</span>,
+    video: <span class="str">'retain-on-failure'</span>,
+  },
+  projects: [
+    { name: <span class="str">'chromium'</span>, use: { ...devices[<span class="str">'Desktop Chrome'</span>] } },
+    { name: <span class="str">'firefox'</span>,  use: { ...devices[<span class="str">'Desktop Firefox'</span>] } },
+    { name: <span class="str">'webkit'</span>,   use: { ...devices[<span class="str">'Desktop Safari'</span>] } },
+    { name: <span class="str">'mobile'</span>,   use: { ...devices[<span class="str">'iPhone 12'</span>] } },
+  ],
+});</pre>
+    </div>
+    <div class="note yellow"><strong>&#128161; Config Tips</strong>fullyParallel:true runs tests parallel within files. trace:'on-first-retry' is optimal &mdash; captures failures without excess data overhead.</div>
+  </div>
+</div>
+</template>
+
+<!-- PW LESSON 3 -->
+<template id="pw-tpl-3">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Locators &amp; Selectors</h2><p>Find elements reliably at scale</p></div><button class="close-btn" onclick="closePwLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <h3>Recommended Locator Priority</h3>
+    <ul class="priority-list">
+      <li><span class="pnum pw">1</span><div class="pcontent"><strong>getByRole()</strong><code>page.getByRole('button', {name:'Submit'})</code> &mdash; accessible &amp; resilient</div></li>
+      <li><span class="pnum pw">2</span><div class="pcontent"><strong>getByLabel()</strong><code>page.getByLabel('Email address')</code> &mdash; form fields</div></li>
+      <li><span class="pnum pw">3</span><div class="pcontent"><strong>getByTestId()</strong><code>page.getByTestId('submit-btn')</code> &mdash; requires data-testid</div></li>
+      <li><span class="pnum pw">4</span><div class="pcontent"><strong>getByText()</strong><code>page.getByText('Sign in')</code> &mdash; for static text</div></li>
+      <li><span class="pnum pw">5</span><div class="pcontent"><strong>locator(css/xpath)</strong> &mdash; last resort only</div></li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang pw">typescript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Chaining locators</span>
+<span class="kw">const</span> form = page.<span class="fn">getByRole</span>(<span class="str">'form'</span>, { name: <span class="str">'Login'</span> });
+<span class="kw">await</span> form.<span class="fn">getByLabel</span>(<span class="str">'Username'</span>).<span class="fn">fill</span>(<span class="str">'rajib'</span>);
+<span class="kw">await</span> form.<span class="fn">getByRole</span>(<span class="str">'button'</span>, { name: <span class="str">'Sign in'</span> }).<span class="fn">click</span>();
+
+<span class="cm">// Filter locators</span>
+<span class="kw">await</span> page.<span class="fn">getByRole</span>(<span class="str">'listitem'</span>)
+  .<span class="fn">filter</span>({ hasText: <span class="str">'Product A'</span> })
+  .<span class="fn">getByRole</span>(<span class="str">'button'</span>, { name: <span class="str">'Add to cart'</span> })
+  .<span class="fn">click</span>();</pre>
+    </div>
+    <div class="note yellow"><strong>&#127919; Interview Answer</strong>"I always start with ARIA role-based locators because they reflect how real users interact and remain stable across UI refactors."</div>
+  </div>
+</div>
+</template>
+
+<!-- PW LESSON 4 -->
+<template id="pw-tpl-4">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Actions &amp; Interactions</h2><p>Simulate every user interaction</p></div><button class="close-btn" onclick="closePwLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang pw">typescript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Basic actions</span>
+<span class="kw">await</span> page.<span class="fn">getByLabel</span>(<span class="str">'Email'</span>).<span class="fn">fill</span>(<span class="str">'test@example.com'</span>);
+<span class="kw">await</span> page.<span class="fn">getByRole</span>(<span class="str">'button'</span>).<span class="fn">click</span>();
+<span class="kw">await</span> page.<span class="fn">getByRole</span>(<span class="str">'button'</span>).<span class="fn">dblclick</span>();
+<span class="kw">await</span> page.<span class="fn">getByText</span>(<span class="str">'Menu'</span>).<span class="fn">hover</span>();
+
+<span class="cm">// Keyboard</span>
+<span class="kw">await</span> page.<span class="fn">keyboard</span>.<span class="fn">press</span>(<span class="str">'Tab'</span>);
+<span class="kw">await</span> page.<span class="fn">keyboard</span>.<span class="fn">press</span>(<span class="str">'Control+a'</span>);
+
+<span class="cm">// File upload</span>
+<span class="kw">await</span> page.<span class="fn">getByLabel</span>(<span class="str">'Upload'</span>).<span class="fn">setInputFiles</span>(<span class="str">'./data/test.pdf'</span>);
+
+<span class="cm">// Drag and drop</span>
+<span class="kw">await</span> page.<span class="fn">dragAndDrop</span>(<span class="str">'#source'</span>, <span class="str">'#target'</span>);
+
+<span class="cm">// Select dropdown</span>
+<span class="kw">await</span> page.<span class="fn">getByRole</span>(<span class="str">'combobox'</span>).<span class="fn">selectOption</span>(<span class="str">'Germany'</span>);
+
+<span class="cm">// Checkbox</span>
+<span class="kw">await</span> page.<span class="fn">getByRole</span>(<span class="str">'checkbox'</span>).<span class="fn">check</span>();</pre>
+    </div>
+    <div class="note cyan"><strong>&#8505; Auto-wait</strong>Every action waits for the element to be: attached, visible, stable (not animating), enabled, and editable. No explicit waits needed in 95% of cases.</div>
+  </div>
+</div>
+</template>
+
+<!-- PW LESSON 5 -->
+<template id="pw-tpl-5">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Assertions &amp; Matchers</h2><p>Verify state with confidence</p></div><button class="close-btn" onclick="closePwLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang pw">typescript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Locator assertions (auto-retry up to timeout)</span>
+<span class="kw">await</span> <span class="fn">expect</span>(page.<span class="fn">getByRole</span>(<span class="str">'heading'</span>)).<span class="fn">toBeVisible</span>();
+<span class="kw">await</span> <span class="fn">expect</span>(page.<span class="fn">getByRole</span>(<span class="str">'button'</span>)).<span class="fn">toBeEnabled</span>();
+<span class="kw">await</span> <span class="fn">expect</span>(page.<span class="fn">getByTestId</span>(<span class="str">'status'</span>)).<span class="fn">toHaveText</span>(<span class="str">'Success'</span>);
+<span class="kw">await</span> <span class="fn">expect</span>(page.<span class="fn">getByLabel</span>(<span class="str">'Name'</span>)).<span class="fn">toHaveValue</span>(<span class="str">'Rajib'</span>);
+
+<span class="cm">// Page assertions</span>
+<span class="kw">await</span> <span class="fn">expect</span>(page).<span class="fn">toHaveTitle</span>(<span class="str">'Dashboard'</span>);
+<span class="kw">await</span> <span class="fn">expect</span>(page).<span class="fn">toHaveURL</span>(<span class="str">'https://app.example.com/home'</span>);
+
+<span class="cm">// Soft assertions &mdash; continue test even on failure</span>
+<span class="kw">await</span> <span class="fn">expect</span>.soft(page.<span class="fn">getByTestId</span>(<span class="str">'price'</span>)).<span class="fn">toHaveText</span>(<span class="str">'29'</span>);
+<span class="kw">await</span> <span class="fn">expect</span>.soft(page.<span class="fn">getByTestId</span>(<span class="str">'stock'</span>)).<span class="fn">toBeVisible</span>();
+<span class="cm">// All soft assertion failures reported at end</span></pre>
+    </div>
+    <div class="note yellow"><strong>&#128161; Soft vs Hard Assertions</strong>Soft assertions (expect.soft()) let the test continue even when they fail &mdash; ideal for validating multiple UI elements at once without stopping on the first mismatch.</div>
+  </div>
+</div>
+</template>
+
+<!-- PW LESSON 6 -->
+<template id="pw-tpl-6">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Waits &amp; Auto-waiting</h2><p>Eliminate flakiness without sleeps</p></div><button class="close-btn" onclick="closePwLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang pw">typescript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Wait for element state</span>
+<span class="kw">await</span> page.<span class="fn">getByRole</span>(<span class="str">'progressbar'</span>).<span class="fn">waitFor</span>({ state: <span class="str">'hidden'</span> });
+
+<span class="cm">// Wait for network idle</span>
+<span class="kw">await</span> page.<span class="fn">waitForLoadState</span>(<span class="str">'networkidle'</span>);
+
+<span class="cm">// Wait for URL change</span>
+<span class="kw">await</span> page.<span class="fn">waitForURL</span>(<span class="str">'**/dashboard'</span>);
+
+<span class="cm">// Wait for response (synchronise click + network)</span>
+<span class="kw">const</span> [response] = <span class="kw">await</span> Promise.<span class="fn">all</span>([
+  page.<span class="fn">waitForResponse</span>(<span class="str">'**/api/orders'</span>),
+  page.<span class="fn">getByRole</span>(<span class="str">'button'</span>, { name: <span class="str">'Place Order'</span> }).<span class="fn">click</span>()
+]);
+
+<span class="cm">// NEVER do this &mdash; arbitrary sleep = flaky</span>
+<span class="cm">// await page.waitForTimeout(3000);</span></pre>
+    </div>
+    <div class="note red"><strong>&#9888; Anti-pattern</strong>waitForTimeout() is a hard-coded sleep. It makes tests either too slow (over-waiting) or flaky (under-waiting). Always use state-based waits instead.</div>
+  </div>
+</div>
+</template>
+
+<!-- PW LESSON 7 -->
+<template id="pw-tpl-7">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Page Object Model</h2><p>Scalable test architecture with TypeScript</p></div><button class="close-btn" onclick="closePwLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang pw">typescript &mdash; LoginPage.ts</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="kw">import</span> { Page, Locator } <span class="kw">from</span> <span class="str">'@playwright/test'</span>;
+
+<span class="kw">export class</span> <span class="tp">LoginPage</span> {
+  <span class="kw">readonly</span> emailInput: <span class="tp">Locator</span>;
+  <span class="kw">readonly</span> passwordInput: <span class="tp">Locator</span>;
+  <span class="kw">readonly</span> submitBtn: <span class="tp">Locator</span>;
+
+  <span class="fn">constructor</span>(<span class="kw">private readonly</span> page: <span class="tp">Page</span>) {
+    <span class="kw">this</span>.emailInput    = page.<span class="fn">getByLabel</span>(<span class="str">'Email'</span>);
+    <span class="kw">this</span>.passwordInput = page.<span class="fn">getByLabel</span>(<span class="str">'Password'</span>);
+    <span class="kw">this</span>.submitBtn     = page.<span class="fn">getByRole</span>(<span class="str">'button'</span>, { name: <span class="str">'Sign in'</span> });
   }
-  grid.innerHTML = html;
 
-  var homeQa = document.getElementById('home-qa');
-  var qaHtml = '';
-  for (var j = 0; j < 5; j++) {
-    qaHtml += '<div class="qa-item" id="hqa-' + j + '">' +
-      '<div class="qa-q" onclick="toggleQA(this)">' +
-      '<div class="qa-num">Q0' + (j+1) + '</div>' +
-      '<div class="qa-question">' + QA[j].q + '</div>' +
-      '<div class="qa-arrow">&#x25B6;</div>' +
-      '</div>' +
-      '<div class="qa-a" style="display:none">' + QA[j].a + '</div>' +
-      '</div>';
+  <span class="kw">async</span> <span class="fn">goto</span>() {
+    <span class="kw">await</span> <span class="kw">this</span>.page.<span class="fn">goto</span>(<span class="str">'/login'</span>);
   }
-  qaHtml += '<div style="text-align:center;margin-top:1rem">' +
-    '<button onclick="openLesson(11)" style="background:var(--green3);border:1px solid rgba(0,255,135,.2);color:var(--green);padding:.6rem 1.5rem;border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:.78rem;letter-spacing:.05em;">View All 15 Q&amp;A &rarr;</button>' +
-    '</div>';
-  homeQa.innerHTML = qaHtml;
-}
 
-function openLesson(idx) {
-  document.getElementById('home-view').classList.add('hidden');
-  document.getElementById('lesson-view').classList.remove('hidden');
-  var pct = Math.round(((idx + 1) / LESSONS.length) * 100);
-  document.getElementById('progress-fill').style.width = pct + '%';
-  var l = LESSONS[idx];
-  document.getElementById('lesson-content').innerHTML = '<div class="lesson-detail">' + l.content + '</div>';
-  if (idx === 11) {
-    var body = document.getElementById('qa-body');
-    if (body) {
-      var qaHtml = '';
-      for (var i = 0; i < QA.length; i++) {
-        qaHtml += '<div class="qa-item" id="qa-' + i + '">' +
-          '<div class="qa-q" onclick="toggleQA(this)">' +
-          '<div class="qa-num">Q' + (i < 9 ? '0' : '') + (i+1) + '</div>' +
-          '<div class="qa-question">' + QA[i].q + '</div>' +
-          '<div class="qa-arrow">&#x25B6;</div>' +
-          '</div>' +
-          '<div class="qa-a" style="display:none">' + QA[i].a + '</div>' +
-          '</div>';
-      }
-      body.innerHTML = qaHtml;
+  <span class="kw">async</span> <span class="fn">login</span>(email: <span class="tp">string</span>, password: <span class="tp">string</span>) {
+    <span class="kw">await</span> <span class="kw">this</span>.emailInput.<span class="fn">fill</span>(email);
+    <span class="kw">await</span> <span class="kw">this</span>.passwordInput.<span class="fn">fill</span>(password);
+    <span class="kw">await</span> <span class="kw">this</span>.submitBtn.<span class="fn">click</span>();
+  }
+}</pre>
+    </div>
+    <div class="note yellow"><strong>&#127919; Key Principle</strong>POM separates test logic from UI interaction code. When the UI changes, you update one file &mdash; not every test. TypeScript adds type safety and IDE autocomplete.</div>
+  </div>
+</div>
+</template>
+
+<!-- PW LESSON 8 -->
+<template id="pw-tpl-8">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Fixtures &amp; Hooks</h2><p>Dependency injection for test setup</p></div><button class="close-btn" onclick="closePwLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang pw">typescript &mdash; fixtures.ts</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="kw">import</span> { test <span class="kw">as</span> base } <span class="kw">from</span> <span class="str">'@playwright/test'</span>;
+<span class="kw">import</span> { LoginPage } <span class="kw">from</span> <span class="str">'./LoginPage'</span>;
+
+<span class="kw">type</span> <span class="tp">MyFixtures</span> = { loginPage: <span class="tp">LoginPage</span>; loggedInPage: <span class="tp">LoginPage</span> };
+
+<span class="kw">export const</span> test = base.<span class="fn">extend</span>&lt;<span class="tp">MyFixtures</span>&gt;({
+  loginPage: <span class="kw">async</span> ({ page }, use) =&gt; {
+    <span class="kw">const</span> lp = <span class="kw">new</span> <span class="tp">LoginPage</span>(page);
+    <span class="kw">await</span> lp.<span class="fn">goto</span>();
+    <span class="kw">await</span> <span class="fn">use</span>(lp);
+  },
+  loggedInPage: <span class="kw">async</span> ({ page }, use) =&gt; {
+    <span class="kw">const</span> lp = <span class="kw">new</span> <span class="tp">LoginPage</span>(page);
+    <span class="kw">await</span> lp.<span class="fn">goto</span>();
+    <span class="kw">await</span> lp.<span class="fn">login</span>(<span class="str">'user@test.com'</span>, <span class="str">'secret'</span>);
+    <span class="kw">await</span> <span class="fn">use</span>(lp);
+  }
+});</pre>
+    </div>
+    <div class="note yellow"><strong>&#128161; Fixtures vs beforeEach</strong>Fixtures are reusable across test files, type-safe via TypeScript generics, and support dependency injection. beforeEach is scoped to one file. In large projects, fixtures are always the better choice.</div>
+  </div>
+</div>
+</template>
+
+<!-- PW LESSON 9 -->
+<template id="pw-tpl-9">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>API Testing</h2><p>REST API validation and UI+API hybrid patterns</p></div><button class="close-btn" onclick="closePwLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang pw">typescript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="kw">import</span> { test, expect } <span class="kw">from</span> <span class="str">'@playwright/test'</span>;
+
+test(<span class="str">'POST /users creates a user'</span>, <span class="kw">async</span> ({ request }) =&gt; {
+  <span class="kw">const</span> response = <span class="kw">await</span> request.<span class="fn">post</span>(<span class="str">'/api/users'</span>, {
+    data: { name: <span class="str">'Rajib'</span>, role: <span class="str">'admin'</span> }
+  });
+  <span class="fn">expect</span>(response.<span class="fn">status</span>()).<span class="fn">toBe</span>(<span class="num">201</span>);
+  <span class="kw">const</span> body = <span class="kw">await</span> response.<span class="fn">json</span>();
+  <span class="fn">expect</span>(body.name).<span class="fn">toBe</span>(<span class="str">'Rajib'</span>);
+});
+
+<span class="cm">// Hybrid: API setup then UI verify</span>
+test(<span class="str">'order appears in UI after API creation'</span>, <span class="kw">async</span> ({ request, page }) =&gt; {
+  <span class="kw">const</span> res = <span class="kw">await</span> request.<span class="fn">post</span>(<span class="str">'/api/orders'</span>, {
+    data: { product: <span class="str">'Widget'</span>, qty: <span class="num">1</span> }
+  });
+  <span class="kw">const</span> { id } = <span class="kw">await</span> res.<span class="fn">json</span>();
+  <span class="kw">await</span> page.<span class="fn">goto</span>(<span class="str">`/orders/${id}`</span>);
+  <span class="kw">await</span> <span class="fn">expect</span>(page.<span class="fn">getByText</span>(<span class="str">'Widget'</span>)).<span class="fn">toBeVisible</span>();
+});</pre>
+    </div>
+    <div class="note yellow"><strong>&#127919; Hybrid Pattern</strong>"I use API calls for test data setup and teardown, then verify through the UI. This is 5&ndash;10x faster than full UI flows and keeps tests deterministic."</div>
+  </div>
+</div>
+</template>
+
+<!-- PW LESSON 10 -->
+<template id="pw-tpl-10">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Debugging Tools</h2><p>Find failures faster with built-in tooling</p></div><button class="close-btn" onclick="closePwLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <ul class="checklist pw">
+      <li><strong>Trace Viewer</strong> &mdash; npx playwright show-trace trace.zip &mdash; step-through with screenshots and network</li>
+      <li><strong>UI Mode</strong> &mdash; npx playwright test --ui &mdash; time-travel debugging in a GUI</li>
+      <li><strong>Inspector</strong> &mdash; PWDEBUG=1 npx playwright test &mdash; pause and inspect selectors live</li>
+      <li><strong>Headed</strong> &mdash; npx playwright test --headed &mdash; watch browser execute</li>
+      <li><strong>page.pause()</strong> &mdash; programmatic breakpoint in test code</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang pw">typescript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Programmatic pause &mdash; opens Playwright Inspector</span>
+<span class="kw">await</span> page.<span class="fn">pause</span>();
+
+<span class="cm">// Capture trace manually</span>
+<span class="kw">await</span> context.<span class="fn">tracing</span>.<span class="fn">start</span>({ screenshots: <span class="kw">true</span>, snapshots: <span class="kw">true</span> });
+<span class="cm">// ... test actions</span>
+<span class="kw">await</span> context.<span class="fn">tracing</span>.<span class="fn">stop</span>({ path: <span class="str">'trace.zip'</span> });</pre>
+    </div>
+    <div class="note cyan"><strong>&#8505; CI Best Practice</strong>Set trace:'on-first-retry' in config. The trace file is attached to the HTML report automatically &mdash; no extra code needed.</div>
+  </div>
+</div>
+</template>
+
+<!-- PW LESSON 11 -->
+<template id="pw-tpl-11">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Network &amp; Mocking</h2><p>Control HTTP traffic in tests</p></div><button class="close-btn" onclick="closePwLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang pw">typescript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Mock an API response</span>
+<span class="kw">await</span> page.<span class="fn">route</span>(<span class="str">'**/api/products'</span>, route =&gt;
+  route.<span class="fn">fulfill</span>({
+    status: <span class="num">200</span>,
+    contentType: <span class="str">'application/json'</span>,
+    body: JSON.<span class="fn">stringify</span>([{ id: <span class="num">1</span>, name: <span class="str">'Widget'</span> }])
+  })
+);
+
+<span class="cm">// Abort image/font requests to speed up tests</span>
+<span class="kw">await</span> page.<span class="fn">route</span>(<span class="str">'**/*.{png,jpg,svg}'</span>, route =&gt; route.<span class="fn">abort</span>());
+
+<span class="cm">// Modify live response on the fly</span>
+<span class="kw">await</span> page.<span class="fn">route</span>(<span class="str">'**/api/user'</span>, <span class="kw">async</span> route =&gt; {
+  <span class="kw">const</span> response = <span class="kw">await</span> route.<span class="fn">fetch</span>();
+  <span class="kw">const</span> json = <span class="kw">await</span> response.<span class="fn">json</span>();
+  json.role = <span class="str">'superadmin'</span>;
+  <span class="kw">await</span> route.<span class="fn">fulfill</span>({ response, json });
+});</pre>
+    </div>
+    <div class="note yellow"><strong>&#128161; Use Cases</strong>Mock external APIs (payments, auth), test error states (503, empty responses), speed up tests by aborting images/fonts, isolate frontend from backend flakiness.</div>
+  </div>
+</div>
+</template>
+
+<!-- PW LESSON 12 Q&A -->
+<template id="pw-tpl-12">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Interview Q&amp;A</h2><p>Model answers for senior SDET interviews</p></div><button class="close-btn" onclick="closePwLesson()">&#10005;</button></div>
+  <div class="lesson-body" id="pw-qa-body">
+  </div>
+</div>
+</template>
+
+<!-- CC LESSON 0 -->
+<template id="cc-tpl-0">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>What is Claude Code?</h2><p>Anthropic's agentic coding CLI explained</p></div><button class="close-btn" onclick="closeCcLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <p>Claude Code is Anthropic's official command-line tool that gives Claude direct access to your local environment &mdash; files, terminal, git, and external tools. Unlike a chatbot, it reads your codebase, runs commands, and solves complex tasks autonomously.</p>
+    <h3>Core Capabilities</h3>
+    <ul class="checklist cc">
+      <li>Read, write, and edit files across your entire project</li>
+      <li>Execute terminal commands and interpret output</li>
+      <li>Run your test suite and fix failures autonomously</li>
+      <li>Interact with git &mdash; commits, diffs, branch management</li>
+      <li>Connect to external services via MCP servers</li>
+      <li>Remember project context via CLAUDE.md and memory</li>
+    </ul>
+    <div class="note electric"><strong>&#9889; Why it matters for QA</strong>Claude Code can generate Playwright tests from a feature description, run them, analyse failures, and fix the tests &mdash; in one autonomous loop. It's not just a code generator; it's a QA agent.</div>
+  </div>
+</div>
+</template>
+
+<!-- CC LESSON 1 -->
+<template id="cc-tpl-1">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Setup &amp; Installation</h2><p>Get Claude Code running in minutes</p></div><button class="close-btn" onclick="closeCcLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <h3>Requirements</h3>
+    <ul class="checklist cc">
+      <li>Node.js 18 or higher</li>
+      <li>Anthropic API key (or Claude Max subscription)</li>
+      <li>macOS, Linux, or WSL2 on Windows</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang cc">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm"># Install globally</span>
+npm install -g @anthropic-ai/claude-code
+
+<span class="cm"># Set your API key</span>
+export ANTHROPIC_API_KEY=sk-ant-...
+
+<span class="cm"># Or use OAuth login</span>
+claude login
+
+<span class="cm"># Start in your project directory</span>
+cd my-playwright-project
+claude</pre>
+    </div>
+    <h3>First Commands to Try</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang cc">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm"># Explain the project</span>
+&gt; Explain the structure of this Playwright project
+
+<span class="cm"># Generate a test</span>
+&gt; Write a Playwright test for the login page at /login
+
+<span class="cm"># Run and fix</span>
+&gt; Run the login tests and fix any failures</pre>
+    </div>
+    <div class="note electric"><strong>&#128161; Pro Tip</strong>Run claude from your repo root so it has access to playwright.config.ts, package.json, and your test directory. Claude Code reads these automatically for context.</div>
+  </div>
+</div>
+</template>
+
+<!-- CC LESSON 2 -->
+<template id="cc-tpl-2">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Slash Commands</h2><p>Built-in CLI commands for power users</p></div><button class="close-btn" onclick="closeCcLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <div class="table-wrap"><table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td>/help</td><td>Show all available commands</td></tr>
+      <tr><td>/clear</td><td>Clear conversation history (free up context)</td></tr>
+      <tr><td>/compact</td><td>Summarise conversation to reduce token usage</td></tr>
+      <tr><td>/model</td><td>Switch Claude model (Sonnet / Opus)</td></tr>
+      <tr><td>/review</td><td>Request code review of recent changes</td></tr>
+      <tr><td>/init</td><td>Generate CLAUDE.md for current project</td></tr>
+      <tr><td>/permissions</td><td>View and manage tool permissions</td></tr>
+      <tr><td>/memory</td><td>View and edit persistent memory</td></tr>
+      <tr><td>/mcp</td><td>List and manage connected MCP servers</td></tr>
+      <tr><td>/cost</td><td>Show token usage and API cost for session</td></tr>
+    </table></div>
+    <div class="note electric"><strong>&#9889; Custom Slash Commands</strong>Create your own by placing Markdown files in .claude/commands/. For example, .claude/commands/gen-test.md becomes the /gen-test command &mdash; great for standardising prompts across your team.</div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang cc">markdown &mdash; .claude/commands/gen-test.md</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre>Generate a Playwright TypeScript test for: $ARGUMENTS
+
+Requirements:
+- Use Page Object Model pattern
+- Include happy path and error scenarios
+- Add meaningful test descriptions
+- Use getByRole locators where possible</pre>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- CC LESSON 3 -->
+<template id="cc-tpl-3">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Skills vs Commands vs Agents</h2><p>The three layers of reusability</p></div><button class="close-btn" onclick="closeCcLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <div class="table-wrap"><table>
+      <tr><th>Concept</th><th>Location</th><th>Purpose</th><th>When to Use</th></tr>
+      <tr><td>Slash Command</td><td>.claude/commands/*.md</td><td>Prompt template, invoked by /name</td><td>Repeated prompts with parameters</td></tr>
+      <tr><td>Skill</td><td>/mnt/skills/ or .claude/skills/</td><td>Reusable workflow with SKILL.md</td><td>Complex multi-step procedures</td></tr>
+      <tr><td>Sub-agent</td><td>Created at runtime</td><td>Parallel autonomous task execution</td><td>Long-running or parallelisable tasks</td></tr>
+    </table></div>
+    <h3>Skills in Depth</h3>
+    <p>A Skill is a folder containing a SKILL.md that describes a reusable, structured workflow. Claude reads SKILL.md before executing &mdash; it encodes best practices, constraints, and step-by-step guidance.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang cc">markdown &mdash; .claude/skills/pw-test-gen/SKILL.md</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre># Playwright Test Generation Skill
+
+## Steps
+1. Read existing tests in /tests to match patterns
+2. Identify page objects in /pages directory
+3. Generate test using existing POM classes
+4. Place in correct directory per naming convention
+5. Run test and fix any immediate failures
+
+## Constraints
+- Always use getByRole as primary locator
+- Never use waitForTimeout
+- Tests must be idempotent</pre>
+    </div>
+    <div class="note electric"><strong>&#128161; Key Difference</strong>Slash commands are lightweight prompt templates. Skills are heavyweight workflow specifications with steps, constraints, and context-reading logic. Use skills for nuanced, multi-step execution.</div>
+  </div>
+</div>
+</template>
+
+<!-- CC LESSON 4 -->
+<template id="cc-tpl-4">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Hooks &amp; Automation</h2><p>Intercept Claude's actions with shell scripts</p></div><button class="close-btn" onclick="closeCcLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <div class="table-wrap"><table>
+      <tr><th>Hook Type</th><th>When it fires</th><th>Use case</th></tr>
+      <tr><td>PreToolUse</td><td>Before Claude uses any tool</td><td>Validate, log, gate dangerous commands</td></tr>
+      <tr><td>PostToolUse</td><td>After Claude uses any tool</td><td>Run linter, auto-format, log results</td></tr>
+      <tr><td>Stop</td><td>When Claude finishes a task</td><td>Send Slack notification, run tests</td></tr>
+      <tr><td>Notification</td><td>When Claude sends a message</td><td>Desktop alerts for long tasks</td></tr>
+    </table></div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang cc">json &mdash; .claude/settings.json</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre>{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Write",
+      "hooks": [{
+        "type": "command",
+        "command": "npx eslint --fix $CLAUDE_FILE_PATHS"
+      }]
+    }],
+    "Stop": [{
+      "hooks": [{
+        "type": "command",
+        "command": "osascript -e 'display notification \"Claude finished\"'"
+      }]
+    }]
+  }
+}</pre>
+    </div>
+    <div class="note electric"><strong>&#9889; QA Power Move</strong>Use a PostToolUse hook on file writes to automatically run Playwright tests on the affected file. Claude writes the test, hook runs it, Claude sees output and fixes failures &mdash; fully autonomous loop.</div>
+  </div>
+</div>
+</template>
+
+<!-- CC LESSON 5 -->
+<template id="cc-tpl-5">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>MCP Servers &amp; Playwright MCP</h2><p>Connect Claude to external tools and browsers</p></div><button class="close-btn" onclick="closeCcLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <p>MCP (Model Context Protocol) is an open standard that lets Claude connect to external services. For QA, the Playwright MCP server lets Claude control a real browser.</p>
+    <h3>Setting up Playwright MCP</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang cc">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm"># Install Playwright MCP server</span>
+npm install -g @playwright/mcp
+
+<span class="cm"># Connect in Claude Code</span>
+claude mcp add playwright -- npx @playwright/mcp@latest
+
+<span class="cm"># Verify connection</span>
+/mcp</pre>
+    </div>
+    <h3>What Playwright MCP Enables</h3>
+    <ul class="checklist cc">
+      <li>Claude navigates real browsers and takes screenshots</li>
+      <li>Click, fill, and interact with any live website</li>
+      <li>Extract content and verify UI state</li>
+      <li>Generate tests by watching real interactions</li>
+      <li>Combine with Playwright test runner for full loop automation</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang cc">bash &mdash; Example prompts</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre>&gt; Navigate to https://myapp.com/login and screenshot
+
+&gt; Click Sign In and verify we reach /dashboard
+
+&gt; Fill the registration form and generate a test from what you did</pre>
+    </div>
+    <div class="note electric"><strong>&#9889; Game Changer</strong>Claude Code can observe your app live, generate tests from real interactions, then run those tests &mdash; closing the loop from observation to automated suite entirely autonomously.</div>
+  </div>
+</div>
+</template>
+
+<!-- CC LESSON 6 -->
+<template id="cc-tpl-6">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Creating a Skill</h2><p>Build reusable workflows for your team</p></div><button class="close-btn" onclick="closeCcLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <h3>Directory Structure</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang cc">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre>.claude/
+  skills/
+    pw-test-gen/
+      SKILL.md        &larr; Required: workflow definition
+      examples/       &larr; Optional: sample inputs/outputs
+      templates/      &larr; Optional: code templates</pre>
+    </div>
+    <h3>SKILL.md Structure</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang cc">markdown</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre># [Skill Name]
+
+## Purpose
+One sentence describing what this skill does.
+
+## Pre-conditions
+- Project uses Playwright TypeScript
+- POM files exist in /pages
+
+## Steps
+1. Read SKILL.md context
+2. Scan existing patterns in /tests
+3. Identify relevant page objects
+4. Generate test file
+5. Run and validate
+
+## Constraints
+- Naming: *.spec.ts
+- Never hard-code test data
+- Always clean up created data</pre>
+    </div>
+    <div class="note electric"><strong>&#128161; Best Practice</strong>Write skills like runbooks &mdash; assume Claude has no project context beyond SKILL.md. Clearer steps and constraints produce more consistent output across the team.</div>
+  </div>
+</div>
+</template>
+
+<!-- CC LESSON 7 -->
+<template id="cc-tpl-7">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Tools &amp; Permissions</h2><p>What Claude Code can do and how to control it</p></div><button class="close-btn" onclick="closeCcLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <div class="table-wrap"><table>
+      <tr><th>Tool</th><th>What it does</th><th>Risk</th></tr>
+      <tr><td>Read</td><td>Read file contents</td><td>Low</td></tr>
+      <tr><td>Write</td><td>Create / overwrite files</td><td>Medium</td></tr>
+      <tr><td>Edit</td><td>Targeted string replacement</td><td>Medium</td></tr>
+      <tr><td>Bash</td><td>Execute shell commands</td><td>High</td></tr>
+      <tr><td>WebSearch</td><td>Search the internet</td><td>Low</td></tr>
+      <tr><td>MCP tools</td><td>External service actions</td><td>Varies</td></tr>
+    </table></div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang cc">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm"># Restrict to safe tools only</span>
+claude --allowedTools Read,Write,Edit
+
+<span class="cm"># Deny specific tools</span>
+claude --deniedTools Bash
+
+<span class="cm"># Non-interactive CI mode</span>
+claude --print "Run all tests" \
+  --allowedTools Read,Bash \
+  --output-format json</pre>
+    </div>
+    <div class="note red"><strong>&#9888; Production Safety</strong>Always use --allowedTools in CI pipelines. The Bash tool can execute arbitrary commands &mdash; restrict it to specific safe commands via settings.json in production.</div>
+  </div>
+</div>
+</template>
+
+<!-- CC LESSON 8 -->
+<template id="cc-tpl-8">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Memory &amp; CLAUDE.md</h2><p>Give Claude persistent project context</p></div><button class="close-btn" onclick="closeCcLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <div class="table-wrap"><table>
+      <tr><th>Type</th><th>Scope</th><th>Persists?</th></tr>
+      <tr><td>CLAUDE.md (repo root)</td><td>Project-wide</td><td>Yes &mdash; read every session</td></tr>
+      <tr><td>CLAUDE.md (subdirectory)</td><td>That folder only</td><td>Yes &mdash; read when in that dir</td></tr>
+      <tr><td>/memory command</td><td>User-level</td><td>Yes &mdash; across all projects</td></tr>
+      <tr><td>Conversation context</td><td>Current session</td><td>No &mdash; lost on exit</td></tr>
+    </table></div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang cc">markdown &mdash; CLAUDE.md</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre># Project Context
+
+## Tech Stack
+- Playwright TypeScript (v1.43+)
+- React 18 frontend
+
+## Test Conventions
+- All tests in /tests, named *.spec.ts
+- Page objects in /pages/*.page.ts
+- Use getByRole as primary locator
+
+## Commands
+- npm test &mdash; run all tests
+- npm run test:ui &mdash; Playwright UI mode
+
+## DO NOT
+- Use waitForTimeout
+- Hard-code environment URLs
+- Commit credentials to repo</pre>
+    </div>
+    <div class="note electric"><strong>&#128161; Power Tip</strong>Run /init and Claude generates a CLAUDE.md tailored to your project by reading package.json, config files, and directory structure. Edit it to add team conventions.</div>
+  </div>
+</div>
+</template>
+
+<!-- CC LESSON 9 -->
+<template id="cc-tpl-9">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Settings &amp; Configuration</h2><p>Tune Claude Code for your workflow</p></div><button class="close-btn" onclick="closeCcLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <ul class="checklist cc">
+      <li><strong>Global:</strong> ~/.claude/settings.json (applies to all projects)</li>
+      <li><strong>Project:</strong> .claude/settings.json (committed to repo for team)</li>
+      <li><strong>Local override:</strong> .claude/settings.local.json (gitignored personal prefs)</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang cc">json &mdash; .claude/settings.json</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre>{
+  "model": "claude-sonnet-4-5",
+  "permissions": {
+    "allow": [
+      "Bash(npm test)",
+      "Bash(npx playwright*)",
+      "Read(**)",
+      "Write(tests/**)"
+    ],
+    "deny": [
+      "Bash(rm -rf*)",
+      "Bash(git push*)"
+    ]
+  },
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
     }
   }
-  window.scrollTo(0, 0);
+}</pre>
+    </div>
+    <div class="note electric"><strong>&#128161; Team Setup</strong>Commit .claude/settings.json so every developer gets the same tool permissions and MCP servers automatically when they clone the repo.</div>
+  </div>
+</div>
+</template>
+
+<!-- CC LESSON 10 -->
+<template id="cc-tpl-10">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>IDE Integration</h2><p>Claude Code alongside VS Code, Cursor, and JetBrains</p></div><button class="close-btn" onclick="closeCcLesson()">&#10005;</button></div>
+  <div class="lesson-body">
+    <h3>VS Code Workflow</h3>
+    <ul class="checklist cc">
+      <li>Open integrated terminal (Ctrl+`) and run claude</li>
+      <li>Claude reads files you reference by path</li>
+      <li>Use split terminal &mdash; code on left, Claude on right</li>
+      <li>Claude's file writes hot-reload in VS Code instantly</li>
+    </ul>
+    <h3>Cursor Integration</h3>
+    <p>Use Cursor for inline completions and quick edits; use Claude Code for larger autonomous tasks like "refactor all tests to use POM" or "add fixtures to every spec file".</p>
+    <h3>JetBrains (IntelliJ / WebStorm)</h3>
+    <ul class="checklist cc">
+      <li>Run Claude Code in the built-in terminal</li>
+      <li>JetBrains file watching triggers inspections on Claude's changes</li>
+      <li>Claude Code edits appear in the version control diff view</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang cc">bash &mdash; Useful IDE prompts</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre>&gt; I'm looking at tests/login.spec.ts &mdash; refactor to use LoginPage POM
+
+&gt; The file I just edited has a TypeScript error, fix it
+
+&gt; Generate tests for every exported function in src/utils/validator.ts</pre>
+    </div>
+    <div class="note electric"><strong>&#128161; Tip</strong>Tell Claude Code which file you're looking at &mdash; it gives much better contextual help. Claude can't see your IDE cursor, but it can read any file you name.</div>
+  </div>
+</div>
+</template>
+
+<!-- CC LESSON 11 Q&A -->
+<template id="cc-tpl-11">
+<div class="lesson-detail">
+  <div class="lesson-header"><div class="lesson-header-left"><h2>Top Q&amp;A</h2><p>Interview-quality Claude Code CLI questions</p></div><button class="close-btn" onclick="closeCcLesson()">&#10005;</button></div>
+  <div class="lesson-body" id="cc-qa-body">
+  </div>
+</div>
+</template>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+
+var pwMeta = [
+  { navLabel:'Overview',   title:'Course Overview',         tag:'beginner',  desc:'What you\'ll learn and how to use this guide effectively.' },
+  { navLabel:'What is PW', title:'What is Playwright?',     tag:'beginner',  desc:'Architecture, browser support, and why it dominates modern test automation.' },
+  { navLabel:'Setup',      title:'Installation & Setup',    tag:'beginner',  desc:'Project scaffolding, playwright.config.ts, and essential configuration options.' },
+  { navLabel:'Locators',   title:'Locators & Selectors',    tag:'core',      desc:'getByRole, getByTestId, CSS, XPath, chaining — and when to use each.' },
+  { navLabel:'Actions',    title:'Actions & Interactions',  tag:'core',      desc:'click, fill, type, drag, hover, keyboard, file upload, and more.' },
+  { navLabel:'Assertions', title:'Assertions & Matchers',   tag:'core',      desc:'expect() API, soft assertions, custom matchers, and async assertions.' },
+  { navLabel:'Waits',      title:'Waits & Auto-waiting',    tag:'core',      desc:'How auto-waiting works, waitFor, waitForSelector, and avoiding anti-patterns.' },
+  { navLabel:'POM',        title:'Page Object Model',       tag:'advanced',  desc:'POM with TypeScript classes, inheritance, and component objects.' },
+  { navLabel:'Fixtures',   title:'Fixtures & Hooks',        tag:'advanced',  desc:'Custom fixtures, test.beforeEach, test.afterAll, and dependency injection.' },
+  { navLabel:'API',        title:'API Testing',             tag:'advanced',  desc:'APIRequestContext, response validation, mocking, and API+UI hybrid tests.' },
+  { navLabel:'Debug',      title:'Debugging Tools',         tag:'advanced',  desc:'Trace viewer, --debug mode, Inspector, headed mode, and Playwright UI mode.' },
+  { navLabel:'Network',    title:'Network & Mocking',       tag:'advanced',  desc:'page.route(), request interception, response mocking, and HAR files.' },
+  { navLabel:'Q&A',        title:'Interview Q&A',           tag:'interview', desc:'30+ real interview questions with model answers — senior SDET level.' }
+];
+
+var ccMeta = [
+  { navLabel:'Overview',    title:'What is Claude Code?',          tag:'essential', desc:'Introduction to the agentic CLI, how it works, and why it changes QA automation.' },
+  { navLabel:'Setup',       title:'Setup & Installation',          tag:'essential', desc:'Node.js requirements, npm install, API key setup, and first run.' },
+  { navLabel:'Slash Cmds',  title:'Slash Commands',                tag:'essential', desc:'Built-in /commands — /clear, /compact, /help, /model, /review, /init and more.' },
+  { navLabel:'Skills',      title:'Skills vs Commands vs Agents',  tag:'essential', desc:'Understanding the three layers of Claude Code reusability.' },
+  { navLabel:'Hooks',       title:'Hooks & Automation',            tag:'power',     desc:'PreToolUse, PostToolUse, Stop hooks — automate quality gates and notifications.' },
+  { navLabel:'MCP',         title:'MCP Servers & Playwright MCP',  tag:'power',     desc:'What MCP is, connecting servers, and the Playwright MCP server for browser control.' },
+  { navLabel:'Create Skill',title:'Creating a Skill',              tag:'power',     desc:'Step-by-step guide to building, structuring, and testing a custom skill.' },
+  { navLabel:'Tools',       title:'Tools & Permissions',           tag:'essential', desc:'Built-in tools, tool categories, permission model, and --allowedTools flag.' },
+  { navLabel:'Memory',      title:'Memory & CLAUDE.md',            tag:'deep',      desc:'How Claude remembers context — CLAUDE.md, memory files, and session management.' },
+  { navLabel:'Settings',    title:'Settings & Configuration',      tag:'essential', desc:'settings.json, global vs project config, environment variables, and profiles.' },
+  { navLabel:'IDE',         title:'IDE Integration',               tag:'power',     desc:'VS Code, Cursor, JetBrains — using Claude Code alongside your editor.' },
+  { navLabel:'Q&A',         title:'Top Q&A',                       tag:'interview', desc:'25+ interview-quality Q&As covering Claude Code CLI from basics to advanced.' }
+];
+
+var pwQA = [
+  ['What is the difference between page.locator() and page.getByRole()?',
+   'page.locator() accepts any CSS/XPath selector string. page.getByRole() is a semantic locator based on ARIA roles — more resilient to UI changes and closer to how users perceive the page. I always prefer role-based locators first.'],
+  ['How does Playwright\'s auto-waiting work?',
+   'Before every action, Playwright checks six actionability conditions: attached to DOM, visible, stable (not animating), enabled, not obscured, and editable where applicable. Only when all relevant conditions pass does the action execute.'],
+  ['What is a BrowserContext and why does it matter?',
+   'A BrowserContext is like an incognito session — isolated cookies, storage, and service workers. Each test gets its own context, so there is zero state leakage between tests. Multiple contexts can run in the same browser instance for efficiency.'],
+  ['Explain soft assertions and when to use them.',
+   'expect.soft() records the assertion failure but lets the test continue. Ideal when validating multiple UI properties in one test run — you see all failures at once instead of stopping at the first mismatch.'],
+  ['How do you handle authentication in Playwright at scale?',
+   'I use storageState. On setup, I log in once via API (not UI), save the storage state JSON, then inject it as a fixture. Tests skip the login UI entirely — saving significant time in large suites.'],
+  ['What is the difference between page.route() and page.waitForResponse()?',
+   'page.route() intercepts requests and lets you mock, abort, or modify them. page.waitForResponse() listens passively and returns the actual response with no modification. Use route() for mocking; waitForResponse() for synchronisation.'],
+  ['How would you run tests in parallel and avoid flakiness?',
+   'Enable fullyParallel:true in config. Use worker-scoped fixtures for shared setup such as auth. Ensure each test creates its own data via API. Avoid shared global state — BrowserContext isolation handles the browser side.']
+];
+
+var ccQA = [
+  ['What is Claude Code and how is it different from GitHub Copilot?',
+   'Claude Code is a CLI-based agentic tool — it runs tasks autonomously in your terminal, reads your whole codebase, executes commands, and iterates. GitHub Copilot is an IDE plugin for inline code completion. Claude Code operates at the project level; Copilot at the cursor level.'],
+  ['What is a Skill in Claude Code?',
+   'A Skill is a folder containing a SKILL.md file that defines a reusable, structured workflow. Claude reads SKILL.md before executing, so it encodes your project conventions, constraints, and step-by-step procedures. It is like a runbook for Claude.'],
+  ['How do hooks work in Claude Code?',
+   'Hooks are shell commands that fire at lifecycle events — PreToolUse, PostToolUse, Stop, and Notification. You define them in settings.json. They are automatic: Claude does not need to be asked. Common uses: auto-lint on file writes, run tests after edits, send desktop notifications when tasks complete.'],
+  ['What is MCP and why does it matter for QA?',
+   'MCP (Model Context Protocol) is an open standard that lets Claude connect to external services. For QA, the Playwright MCP server lets Claude control a real browser — navigate, click, screenshot — and then generate tests from what it observed. It closes the loop between exploration and automation.'],
+  ['How does CLAUDE.md help with project context?',
+   'CLAUDE.md is read at the start of every session. It gives Claude persistent project knowledge: tech stack, conventions, test patterns, commands, and team rules — without needing to explain them each time. It is the most important file in a Claude Code workflow.'],
+  ['What is the difference between --allowedTools and settings.json permissions?',
+   '--allowedTools is a CLI flag for one-off session restriction. settings.json permissions persist and can be committed to your repo so the whole team gets consistent tool access. settings.json also supports glob patterns and fine-grained command matching.'],
+  ['How would you use Claude Code in a CI/CD pipeline?',
+   'Use "claude --print task --output-format json --allowedTools Read,Bash" for non-interactive execution. Common CI uses: auto-generate tests for new PRs, run tests and post results, review code changes, or update test data fixtures when API contracts change.']
+];
+
+// ─── STATE & HISTORY ─────────────────────────────────────────────────────────
+
+var currentGuide = null;
+var currentLesson = null;
+
+function buildState(guide, lesson) {
+  return { guide: guide, lesson: lesson };
 }
 
-function showHome() {
-  document.getElementById('home-view').classList.remove('hidden');
-  document.getElementById('lesson-view').classList.add('hidden');
-  window.scrollTo(0, 0);
+window.addEventListener('popstate', function(e) {
+  var state = e.state || { guide: null, lesson: null };
+  applyState(state, true);
+});
+
+function applyState(state, skipPush) {
+  var guide  = (state && state.guide  != null) ? state.guide  : null;
+  var lesson = (state && state.lesson != null) ? state.lesson : null;
+
+  if (guide === null) {
+    showLanding(true);
+  } else if (guide === 'pw') {
+    showPwGuide(true);
+    if (lesson !== null) openPwLesson(lesson, true);
+    else closePwLesson(true);
+  } else if (guide === 'cc') {
+    showCcGuide(true);
+    if (lesson !== null) openCcLesson(lesson, true);
+    else closeCcLesson(true);
+  }
+
+  if (!skipPush) {
+    history.pushState(buildState(guide, lesson), '');
+  }
 }
 
-function toggleQA(el) {
-  var item = el.closest('.qa-item');
-  var answer = item.querySelector('.qa-a');
-  var isOpen = item.classList.contains('open');
-  item.classList.toggle('open', !isOpen);
-  answer.style.display = isOpen ? 'none' : 'block';
+// ─── VIEW SWITCHES ────────────────────────────────────────────────────────────
+
+function showLanding(skipPush) {
+  currentGuide = null;
+  currentLesson = null;
+  document.getElementById('landing-view').classList.remove('hidden');
+  document.getElementById('pw-view').classList.add('hidden');
+  document.getElementById('cc-view').classList.add('hidden');
+  document.getElementById('orb-cc-1').style.display = 'none';
+  document.getElementById('orb-cc-2').style.display = 'none';
+  updateNav(null);
+  if (!skipPush) history.pushState(buildState(null, null), '');
+  window.scrollTo({top:0, behavior:'smooth'});
 }
+
+function showPwGuide(skipPush) {
+  currentGuide = 'pw';
+  document.getElementById('landing-view').classList.add('hidden');
+  document.getElementById('pw-view').classList.remove('hidden');
+  document.getElementById('cc-view').classList.add('hidden');
+  document.getElementById('orb-cc-1').style.display = 'none';
+  document.getElementById('orb-cc-2').style.display = 'none';
+  updateNav('pw');
+  if (!skipPush) history.pushState(buildState('pw', null), '');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function showCcGuide(skipPush) {
+  currentGuide = 'cc';
+  document.getElementById('landing-view').classList.add('hidden');
+  document.getElementById('pw-view').classList.add('hidden');
+  document.getElementById('cc-view').classList.remove('hidden');
+  document.getElementById('orb-cc-1').style.display = 'block';
+  document.getElementById('orb-cc-2').style.display = 'block';
+  updateNav('cc');
+  if (!skipPush) history.pushState(buildState('cc', null), '');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ─── PUBLIC API ───────────────────────────────────────────────────────────────
+
+function goHome() { showLanding(false); }
+
+function openGuide(g) {
+  if (g === 'pw') showPwGuide(false);
+  else showCcGuide(false);
+}
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+
+function updateNav(guide) {
+  var brand   = document.getElementById('nav-brand');
+  var links   = document.getElementById('nav-links');
+  var homeBtn = document.getElementById('nav-home-btn');
+
+  if (!guide) {
+    brand.textContent = 'AI Test Guide';
+    brand.className = 'nav-brand';
+    links.innerHTML = '<button class="nav-link" onclick="goHome()">Home</button>';
+    homeBtn.style.display = 'none';
+    return;
+  }
+
+  homeBtn.style.display = 'block';
+
+  if (guide === 'pw') {
+    brand.textContent = 'PW Guide';
+    brand.className = 'nav-brand';
+    homeBtn.className = 'nav-home-btn';
+    var html = '<button class="nav-link pw" onclick="closePwLesson()">Overview</button>';
+    for (var i = 0; i < pwMeta.length; i++) {
+      html += '<button class="nav-link pw" onclick="openPwLesson(' + i + ')">' + pwMeta[i].navLabel + '</button>';
+    }
+    links.innerHTML = html;
+  } else {
+    brand.textContent = 'CC Guide';
+    brand.className = 'nav-brand cc-mode';
+    homeBtn.className = 'nav-home-btn cc-mode';
+    var html2 = '<button class="nav-link cc" onclick="closeCcLesson()">Overview</button>';
+    for (var j = 0; j < ccMeta.length; j++) {
+      html2 += '<button class="nav-link cc" onclick="openCcLesson(' + j + ')">' + ccMeta[j].navLabel + '</button>';
+    }
+    links.innerHTML = html2;
+  }
+}
+
+// ─── LESSON NAVIGATION ────────────────────────────────────────────────────────
+
+function openPwLesson(idx, skipPush) {
+  currentLesson = idx;
+  var tpl = document.getElementById('pw-tpl-' + idx);
+  var content = document.getElementById('pw-lesson-content');
+  content.innerHTML = '';
+  if (tpl) content.appendChild(tpl.content.cloneNode(true));
+
+  // If Q&A lesson, inject Q&A items
+  if (idx === 12) injectQA('pw-qa-body', pwQA, 'pw');
+
+  document.getElementById('pw-home-section').classList.add('hidden');
+  document.getElementById('pw-lesson-section').classList.remove('hidden');
+  var pct = Math.round(((idx + 1) / pwMeta.length) * 100);
+  document.getElementById('pw-prog').style.width = pct + '%';
+  window.scrollTo({top:0, behavior:'smooth'});
+  if (!skipPush) history.pushState(buildState('pw', idx), '');
+}
+
+function closePwLesson(skipPush) {
+  currentLesson = null;
+  document.getElementById('pw-home-section').classList.remove('hidden');
+  document.getElementById('pw-lesson-section').classList.add('hidden');
+  window.scrollTo({top:0, behavior:'smooth'});
+  if (!skipPush) history.pushState(buildState('pw', null), '');
+}
+
+function openCcLesson(idx, skipPush) {
+  currentLesson = idx;
+  var tpl = document.getElementById('cc-tpl-' + idx);
+  var content = document.getElementById('cc-lesson-content');
+  content.innerHTML = '';
+  if (tpl) content.appendChild(tpl.content.cloneNode(true));
+
+  // If Q&A lesson, inject Q&A items
+  if (idx === 11) injectQA('cc-qa-body', ccQA, 'cc');
+
+  document.getElementById('cc-home-section').classList.add('hidden');
+  document.getElementById('cc-lesson-section').classList.remove('hidden');
+  var pct = Math.round(((idx + 1) / ccMeta.length) * 100);
+  document.getElementById('cc-prog').style.width = pct + '%';
+  window.scrollTo({top:0, behavior:'smooth'});
+  if (!skipPush) history.pushState(buildState('cc', idx), '');
+}
+
+function closeCcLesson(skipPush) {
+  currentLesson = null;
+  document.getElementById('cc-home-section').classList.remove('hidden');
+  document.getElementById('cc-lesson-section').classList.add('hidden');
+  window.scrollTo({top:0, behavior:'smooth'});
+  if (!skipPush) history.pushState(buildState('cc', null), '');
+}
+
+// ─── Q&A INJECTION ────────────────────────────────────────────────────────────
+
+function injectQA(bodyId, qaPairs, cls) {
+  // The body id is in the cloned template content, so query from document
+  var body = document.getElementById(bodyId);
+  if (!body) {
+    // Try querying inside the lesson content container
+    var container = cls === 'pw'
+      ? document.getElementById('pw-lesson-content')
+      : document.getElementById('cc-lesson-content');
+    if (container) body = container.querySelector('#' + bodyId);
+  }
+  if (!body) return;
+  var html = '';
+  for (var i = 0; i < qaPairs.length; i++) {
+    html += '<div class="qa-item" onclick="toggleQa(this)">'
+      + '<div class="qa-q">'
+      + '<span class="qa-num ' + cls + '">Q' + (i + 1) + '</span>'
+      + '<span class="qa-question">' + qaPairs[i][0] + '</span>'
+      + '<span class="qa-arrow">&#8250;</span>'
+      + '</div>'
+      + '<div class="qa-a">' + qaPairs[i][1] + '</div>'
+      + '</div>';
+  }
+  body.innerHTML = html;
+}
+
+// ─── GRID RENDERING ───────────────────────────────────────────────────────────
+
+function renderGrid(meta, gridId, cls, openFn) {
+  var grid = document.getElementById(gridId);
+  if (!grid) return;
+  var html = '';
+  for (var i = 0; i < meta.length; i++) {
+    html += '<div class="lesson-card ' + cls + '" onclick="' + openFn + '(' + i + ')">'
+      + '<div class="lesson-num">LESSON ' + (i < 9 ? '0' : '') + (i + 1) + '</div>'
+      + '<div class="lesson-title">' + meta[i].title + '</div>'
+      + '<div class="lesson-desc">' + meta[i].desc + '</div>'
+      + '<span class="lesson-tag tag-' + meta[i].tag + '">' + meta[i].tag + '</span>'
+      + '</div>';
+  }
+  grid.innerHTML = html;
+}
+
+function renderHomeQA(pairs, containerId, cls) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  var html = '';
+  for (var i = 0; i < pairs.length; i++) {
+    html += '<div class="qa-item" onclick="toggleQa(this)">'
+      + '<div class="qa-q">'
+      + '<span class="qa-num ' + cls + '">Q' + (i + 1) + '</span>'
+      + '<span class="qa-question">' + pairs[i][0] + '</span>'
+      + '<span class="qa-arrow">&#8250;</span>'
+      + '</div>'
+      + '<div class="qa-a">' + pairs[i][1] + '</div>'
+      + '</div>';
+  }
+  el.innerHTML = html;
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+
+function toggleQa(el) { el.classList.toggle('open'); }
 
 function copyCode(btn) {
   var pre = btn.closest('.code-block').querySelector('pre');
-  var text = pre.innerText;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(function() {
-      btn.textContent = 'copied!';
-      setTimeout(function() { btn.textContent = 'copy'; }, 1500);
-    });
-  }
+  if (!pre) return;
+  navigator.clipboard.writeText(pre.innerText).then(function() {
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1800);
+  });
 }
 
-renderHome();
+// ─── INIT ─────────────────────────────────────────────────────────────────────
 
+(function init() {
+  renderGrid(pwMeta, 'pw-grid', 'pw', 'openPwLesson');
+  renderGrid(ccMeta, 'cc-grid', 'cc', 'openCcLesson');
+
+  var pwPreview = [pwQA[0], pwQA[1], pwQA[2]];
+  var ccPreview = [ccQA[0], ccQA[1], ccQA[2]];
+  renderHomeQA(pwPreview, 'pw-home-qa', 'pw');
+  renderHomeQA(ccPreview, 'cc-home-qa', 'cc');
+
+  // Seed initial history state
+  history.replaceState(buildState(null, null), '');
+})();
 </script>
 </body>
 </html>
